@@ -1,7 +1,7 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { STAGGER } from "@/lib/motion";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
-import { GetStartedScreen, MoodScreen, ProgressScreen } from "@/components/mockups/Screens";
+import { ChooseDemoScreen, ListenDemoScreen, ProgressDemoScreen } from "@/components/mockups/Screens";
 import { storeLinks } from "@/content/site";
 
 function AppleBadge() {
@@ -14,7 +14,7 @@ function AppleBadge() {
         className="fill-white"
         style={{ font: "500 8px system-ui" }}
       >
-        Download on the
+        Coming soon on the
       </text>
       <text
         x="25"
@@ -66,9 +66,9 @@ function GoogleBadge() {
  */
 export function Cta() {
   const phones = [
-    { x: "-190px", rotate: -8, Screen: MoodScreen, z: 10 },
-    { x: "190px", rotate: 8, Screen: ProgressScreen, z: 10 },
-    { x: "0px", rotate: 0, Screen: GetStartedScreen, z: 20, underlay: true },
+    { x: "-190px", rotate: -8, Screen: ChooseDemoScreen, z: 10 },
+    { x: "190px", rotate: 8, Screen: ProgressDemoScreen, z: 10 },
+    { x: "0px", rotate: 0, Screen: ListenDemoScreen, z: 20 },
   ];
 
   return (
@@ -84,21 +84,18 @@ export function Cta() {
         </Reveal>
         <Reveal delay={STAGGER}>
           <p className="max-w-blurb text-center text-body-lg text-ink">
-            Start your free 3-month subscription from the links below.
+            Download PujoGo on Android and start your next pandal-hopping adventure.
           </p>
         </Reveal>
 
         <Reveal delay={STAGGER * 2}>
           <div className="relative z-30 flex flex-col items-center gap-3 sm:flex-row">
-            <a
-              href={storeLinks.apple}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-control items-center justify-center rounded-full bg-surface px-6 transition-transform duration-200 hover:scale-[1.03]"
-              aria-label="Download on the App Store"
+            <div
+              className="flex h-control items-center justify-center rounded-full border border-soft bg-surface/60 px-6 opacity-60"
+              aria-label="App Store — coming soon"
             >
               <AppleBadge />
-            </a>
+            </div>
             <a
               href={storeLinks.google}
               target="_blank"
@@ -124,13 +121,7 @@ export function Cta() {
             }}
           >
             <div className="origin-center scale-[0.5] sm:scale-[0.65] lg:scale-100">
-              {"underlay" in phone && phone.underlay ? (
-                <PhoneFrame width={320} underlay={<phone.Screen />} />
-              ) : (
-                <PhoneFrame width={320}>
-                  <phone.Screen />
-                </PhoneFrame>
-              )}
+              <PhoneFrame width={320} underlay={<phone.Screen playing />} />
             </div>
           </div>
         ))}

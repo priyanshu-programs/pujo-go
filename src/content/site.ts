@@ -9,8 +9,7 @@
 export type NavLink = { label: string; href: string };
 
 export const storeLinks = {
-  apple: "https://www.apple.com/app-store/",
-  google: "https://play.google.com/store/search?q=pujo+go&c=apps",
+  google: "https://play.google.com/store/apps/details?id=app.asur.slayers",
 };
 
 export const siteConfig = {
@@ -69,16 +68,12 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
       { label: "Contact", href: "/contact" },
     ],
   },
-  {
-    title: "Blog",
-    links: [{ label: "Blog", href: "/blog" }],
-  },
 ];
 
 export const socialLinks = [
-  { label: "Instagram", href: "https://instagram.com", icon: "instagram" },
-  { label: "Facebook", href: "https://facebook.com", icon: "facebook" },
-  { label: "Threads", href: "https://threads.net", icon: "threads" },
+  { label: "Instagram", href: "https://www.instagram.com/pujogo.in/", icon: "instagram" },
+  { label: "Facebook", href: "https://www.facebook.com/share/1CbDPY8rbS/", icon: "facebook" },
+  { label: "X (Twitter)", href: "https://x.com/pujogoers", icon: "twitter" },
 ] as const;
 
 export const legalLinks: NavLink[] = [

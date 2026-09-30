@@ -21,26 +21,26 @@ export type Step = {
 
 export const howItWorksIntro = {
   title: "How it works",
-  body: "A few mindful moments can change your day. PujoGo helps you reset, relax, and grow with ease.",
+  body: "Turn your pandal hopping into a Pujo adventure. Plan your route, compete with your team, and earn rewards along the way.",
 };
 
 export const steps: Step[] = [
   {
     id: "choose",
     title: "Plan your Pujo",
-    body: "Start by selecting your current mood—calm, stressed, or in need of focus. PujoGo curates the perfect session for you.",
+    body: "Discover nearby pandals, pick the ones you want to visit, and create a route for your Pujo outing.",
     screen: "mood",
   },
   {
     id: "listen",
     title: "Capture pandals",
-    body: "Whether it's a guided meditation, soothing soundscape, or deep breathing session, PujoGo helps you find your balance.",
+    body: "Visit pandals, check in, and team up to compete for captures during Durga Puja.",
     screen: "breathe",
   },
   {
     id: "progress",
     title: "Earn rewards",
-    body: "Build a mindfulness habit with personalized streaks, mood tracking, and insights to help you grow.",
+    body: "Put your pandal visits to work. Compete for gift cards, coupons, and vouchers, and check the app for available rewards and redemption details.",
     screen: "progress",
   },
 ];

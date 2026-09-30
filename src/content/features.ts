@@ -34,8 +34,8 @@ export const featuresIntro = {
 
 const locations: Feature = {
   id: "locations",
-  title: "Remember your locations",
-  body: "Save your favorite meditation spots, whether it's your cozy reading nook, a quiet park, or a peaceful beach.",
+  title: "Save your favorite pandals",
+  body: "Found a pandal you love? Save it so you can find your way back and include it in your next Pujo outing.",
   visual: "photoStack",
   grow: 1,
 };
@@ -50,7 +50,7 @@ const community: Feature = {
 
 const leaderboards: Feature = {
   id: "leaderboards",
-  title: "Climb in leaderboards",
+  title: "Climb the leaderboard",
   body: "Compete with thousands of Pandal hoppers. Claim rare achievements and bring ultimate glory to your club!",
   visual: "leaderboard",
   grow: 1,
@@ -58,8 +58,8 @@ const leaderboards: Feature = {
 
 const daily: Feature = {
   id: "daily",
-  title: "Daily meditations tailored for you",
-  body: "Choose from structured programs designed for better sleep, stress relief, or focus. Each program evolves with your progress, keeping you engaged and motivated.",
+  title: "Discover your next Pujo stop",
+  body: "Find nearby Durga Puja pandals, explore new neighborhoods, and plan a route that brings your Pujo wish list together.",
   visual: "phoneTrio",
   grow: 2,
   maskStop: 57,
@@ -72,7 +72,7 @@ export const featureRows: Feature[][] = [
 ];
 
 /**
- * Leaderboard rows inside the "Climb in leaderboards" tile: Pujo committees
+ * Leaderboard rows inside the "Climb the leaderboard" tile: Pujo committees
  * ranked by "Glory" points. `emoji` + `ring` are placeholder badge art —
  * see FeatureVisuals.tsx for why these stand in for the real icon set.
  */
