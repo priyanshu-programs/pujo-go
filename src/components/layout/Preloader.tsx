@@ -134,7 +134,7 @@ export function Preloader() {
     >
       <div ref={markRef} className="relative opacity-0">
         <Image
-          src="/images/pujogo-logo.webp"
+          src="/Images/logo/logo.png"
           alt=""
           width={1182}
           height={1181}

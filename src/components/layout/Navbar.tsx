@@ -114,7 +114,7 @@ export function Navbar() {
           onClick={() => setOpen(false)}
         >
           <Image
-            src="/Images/pujogo-logo.webp"
+            src="/Images/logo/logo.png"
             alt=""
             width={1182}
             height={1181}

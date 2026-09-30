@@ -27,7 +27,7 @@ export function Footer() {
           <div className="flex max-w-sm flex-col gap-5">
             <Link href="/" aria-label="Pujo Go home" className="flex items-center gap-3">
               <Image
-                src="/Images/pujogo-logo.webp"
+                src="/Images/logo/logo.png"
                 alt=""
                 width={1182}
                 height={1181}
