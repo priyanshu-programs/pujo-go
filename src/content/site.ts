@@ -22,10 +22,10 @@ export const siteConfig = {
 };
 
 export const navLinks: NavLink[] = [
-  { label: "Lorem", href: "/#features" },
-  { label: "Ipsum", href: "/#testimonials" },
-  { label: "Dolor", href: "/#howitworks" },
-  { label: "Amet", href: "/#faq" },
+  { label: "Features", href: "/#features" },
+  { label: "Testimonials", href: "/#testimonials" },
+  { label: "How it works", href: "/#howitworks" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export const navCta: NavLink = { label: "Play Store", href: storeLinks.google };
