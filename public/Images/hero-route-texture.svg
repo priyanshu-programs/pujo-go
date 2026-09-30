@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="800" viewBox="0 0 1600 800" fill="none">
+  <!-- Abstract route diagram, decorative rather than geographic map data. -->
+  <g stroke="#96777b" stroke-opacity=".25" stroke-width="1">
+    <path d="M0 180H215L325 290H545V410H720M95 0V125L245 275V520H450L540 610V800M0 420H140L240 320H425V100H625V0"/>
+    <path d="M1600 115H1400L1280 235H1110V420H935M1490 0V295L1370 415V680H1170L1050 800M1600 520H1465L1330 385H1180V95H995V0"/>
+    <path d="M0 660H320L450 530H640M1600 735H1510L1420 645H1140M530 0V170L640 280M1030 0V160L940 250"/>
+  </g>
+  <g stroke="#c44c54" stroke-opacity=".5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M130 200H285Q305 200 305 220V330Q305 350 325 350H435Q455 350 455 370V470" stroke-dasharray="5 9"/>
+    <path d="M1460 165H1340Q1320 165 1320 185V280Q1320 300 1300 300H1200Q1180 300 1180 320V450" stroke-dasharray="5 9"/>
+  </g>
+  <g fill="#c8585f" fill-opacity=".65" stroke="#c8585f" stroke-opacity=".2" stroke-width="8">
+    <circle cx="130" cy="200" r="3"/><circle cx="305" cy="285" r="3"/><circle cx="455" cy="470" r="3"/>
+    <circle cx="1460" cy="165" r="3"/><circle cx="1320" cy="240" r="3"/><circle cx="1180" cy="450" r="3"/>
+  </g>
+</svg>

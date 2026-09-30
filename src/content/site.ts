@@ -78,6 +78,6 @@ export const socialLinks = [
 
 export const legalLinks: NavLink[] = [
   { label: "Privacy Policy", href: "/privacy" },
-  { label: "Cookies", href: "/cookies" },
   { label: "Terms & Conditions", href: "/terms" },
+  { label: "Delete Account", href: "/delete-account" },
 ];
