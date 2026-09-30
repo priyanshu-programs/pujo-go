@@ -94,7 +94,7 @@ export function Navbar() {
     <header
       ref={headerRef}
       className={`fixed inset-x-0 top-0 z-50 pt-0 transition-colors duration-300 md:pt-4 ${
-        scrolled ? "bg-black/30 backdrop-blur-lg backdrop-saturate-150" : "bg-transparent"
+        scrolled ? "bg-black/85 md:bg-black/30 md:backdrop-blur-lg md:backdrop-saturate-150" : "bg-transparent"
       }`}
     >
       <nav className="shell flex h-[68px] items-center justify-between gap-6 md:h-[66px]">

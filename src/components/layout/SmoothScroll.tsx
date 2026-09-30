@@ -48,6 +48,11 @@ export function SmoothScroll() {
     );
     if (prefersReduced.matches) return;
 
+    // Touch devices scroll natively anyway (Lenis doesn't smooth touch by
+    // default), so skip its per-frame ticker there; ScrollTrigger falls back
+    // to native scroll events on its own.
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
     const lenis = new Lenis({ duration: 1.1 });
 
     // Publish the instance so code that needs to pause scrolling — the

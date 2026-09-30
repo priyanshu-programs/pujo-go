@@ -16,7 +16,9 @@ import { useEffect, useRef, useState } from "react";
  *
  * Only runs where there is a real pointer to replace; touch devices keep their
  * native behaviour and never get `cursor: none` (see the matching media query
- * in globals.css).
+ * in globals.css). Also gated on viewport width so it never shows below the
+ * smallest real laptop screens (~1280-1366px), only on narrower windows,
+ * tablets, and phones.
  */
 
 /**
@@ -27,12 +29,14 @@ import { useEffect, useRef, useState } from "react";
 const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], input, select, textarea, label, summary, [onclick], [tabindex]:not([tabindex="-1"])';
 
-const FINE_POINTER = "(hover: hover) and (pointer: fine)";
+const FINE_POINTER = "(hover: hover) and (pointer: fine) and (min-width: 1024px)";
 
-// The art's hotspot — the extended index fingertip — sits at x=20, y=10 within
-// the SVG's 0 0 468 635 viewBox, which is ~3px, ~1.5px once drawn at 68x92.
-const HOTSPOT_X = 3;
-const HOTSPOT_Y = 1.5;
+// Each state's hotspot is its extended fingertip, in px at the drawn size. The
+// two arts differ: default is x=20,y=10 in a 0 0 468 635 viewBox (68x92), while
+// the hover hand's raised finger tops out at x~209,y~6 in a 0 0 455 626 viewBox
+// (67x92) — so it can't share the default's offset.
+const DEFAULT_HOTSPOT = { x: 3, y: 1.5 };
+const HOVER_HOTSPOT = { x: 31, y: 1 };
 
 export function CustomCursor() {
   // Gates rendering on an actual fine pointer. Resolved in an effect, never
@@ -68,7 +72,7 @@ export function CustomCursor() {
       frame = 0;
       const node = cursorRef.current;
       if (!node) return;
-      node.style.transform = `translate3d(${x - HOTSPOT_X}px, ${y - HOTSPOT_Y}px, 0)`;
+      node.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     };
 
     const onPointerMove = (event: PointerEvent) => {
@@ -122,7 +126,11 @@ export function CustomCursor() {
         alt=""
         width={68}
         height={92}
-        style={{ display: hovering ? "none" : "block" }}
+        style={{
+          display: hovering ? "none" : "block",
+          maxWidth: "none",
+          transform: `translate(${-DEFAULT_HOTSPOT.x}px, ${-DEFAULT_HOTSPOT.y}px)`,
+        }}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -130,7 +138,11 @@ export function CustomCursor() {
         alt=""
         width={67}
         height={92}
-        style={{ display: hovering ? "block" : "none" }}
+        style={{
+          display: hovering ? "block" : "none",
+          maxWidth: "none",
+          transform: `translate(${-HOVER_HOTSPOT.x}px, ${-HOVER_HOTSPOT.y}px)`,
+        }}
       />
     </div>
   );

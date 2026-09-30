@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { easeDhak } from "@/lib/motion";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
-import { BreatheScreen, MoodScreen, SessionsScreen } from "./Screens";
+import { DiscoverDemoScreen, MoodDemoScreen, ToiletDemoScreen } from "./Screens";
 import { leaderboard, notifications } from "@/content/features";
 import type { FeatureVisual } from "@/content/features";
 
@@ -22,11 +21,11 @@ const REORDER = { duration: 0.85, ease: EASE_PREMIUM } as const;
 const GLORY_FADE = { duration: 0.5, ease: EASE_PREMIUM } as const;
 
 /**
- * The phone fan's hover shift. `easeDhak` keeps the site's motion character,
- * but at half the standard DHAK duration: the move is only 10px, and 0.6s over
- * that distance reads as sluggish rather than weighted.
+ * The phone fan's hover shift. Uses the same heavy ease-out as the leaderboard
+ * reorder (fast start, long soft settle), over a longer duration so the
+ * deceleration is clearly visible on the short 10px move.
  */
-const FAN_SHIFT = { duration: 0.3, ease: easeDhak } as const;
+const FAN_SHIFT = { duration: 0.7, ease: EASE_PREMIUM } as const;
 
 /**
  * The six bento-tile visuals. All decorative, so they are hidden from the
@@ -60,24 +59,39 @@ function Gradient({
   );
 }
 
-/** Three tilted photo cards, fanned out. Static — `isHovered` is unused here. */
-function PhotoStack() {
-  const cards: { rotate: number; left: string; angle: number }[] = [
-    { rotate: -11, left: "0%", angle: 130 },
-    { rotate: -3, left: "26%", angle: 150 },
-    { rotate: 8, left: "52%", angle: 170 },
-  ];
+/**
+ * Three tilted photo cards, fanned out. On hover they rise and the outer two
+ * splay further apart — same heavy ease-out shift as the phone fan
+ * (`FAN_SHIFT`), just a smaller-scale nudge.
+ *
+ * Photography: three Durga Puja location shots supplied for this tile,
+ * served from `public/Images/locations`.
+ */
+const PHOTO_STACK_CARDS: { rotate: number; left: string; dx: number; src: string }[] = [
+  { rotate: -11, left: "7%", dx: -8, src: "/Images/locations/location-1.webp" },
+  { rotate: -3, left: "33%", dx: 0, src: "/Images/locations/location-2.webp" },
+  { rotate: 8, left: "59%", dx: 8, src: "/Images/locations/location-3.webp" },
+];
+
+function PhotoStack({ isHovered }: { isHovered: boolean }) {
+  const reduced = useReducedMotion();
 
   return (
     <div className="relative h-full w-full">
-      {cards.map((card, i) => (
-        <span
+      {PHOTO_STACK_CARDS.map((card, i) => (
+        <motion.span
           key={i}
-          className="absolute top-1/2 h-[75%] w-[42%] -translate-y-1/2 overflow-hidden rounded-3xl shadow-[0_10px_20px_-6px_rgba(0,0,0,0.5)]"
+          className="absolute top-1/2 h-[75%] w-[34%] -translate-y-1/2 overflow-hidden rounded-3xl shadow-[0_10px_20px_-6px_rgba(0,0,0,0.5)]"
           style={{ left: card.left, rotate: `${card.rotate}deg` }}
+          animate={
+            reduced ? undefined : { x: isHovered ? card.dx : 0, y: isHovered ? -10 : 0 }
+          }
+          transition={FAN_SHIFT}
         >
-          <Gradient angle={card.angle} />
-        </span>
+          <span className="relative block h-full w-full">
+            <Image src={card.src} alt="" fill sizes="180px" className="object-cover" />
+          </span>
+        </motion.span>
       ))}
     </div>
   );
@@ -103,7 +117,7 @@ const RING_CENTER = { xPct: 50, yPct: 68.0272 };
 /** Opacities bumped well past the source's own faint 0.6/0.4/0.2 so the orbit paths actually register. */
 const COMMUNITY_RINGS: { restSize: number; hoverSize: number; opacity: number }[] = [
   { restSize: 313, hoverSize: 403, opacity: 0.95 },
-  { restSize: 190, hoverSize: 245, opacity: 0.75 },
+  { restSize: 252, hoverSize: 303, opacity: 0.75 }, // halfway between centre avatar (192/204) and outer ring
   { restSize: 120, hoverSize: 155, opacity: 0.55 },
 ];
 
@@ -156,6 +170,30 @@ function Community({ isHovered }: { isHovered: boolean }) {
   const cx = (RING_CENTER.xPct / 100) * box.width;
   const cy = (RING_CENTER.yPct / 100) * box.height;
 
+  /**
+   * Clamp the hover burst to the room actually available above/beside the
+   * ring centre. Top/left/right are hard-clipped by the tile's
+   * `overflow-hidden` with no fade mask (unlike the bottom, which fades),
+   * so an unclamped burst can get sliced off on shorter or narrower tiles.
+   */
+  const RING_EDGE_PADDING = 12;
+  /** The band's `pt-8` sits above this container, so that much extra room exists before the clip edge. */
+  const TOP_PAD = 32;
+  /** Avatars are centred on the orbit, so their own half-size sticks out past it. */
+  const avatarHalf = Math.max(...COMMUNITY_AVATARS.map((a) => a.hoverSize)) / 2;
+  const maxBurstRadius =
+    box.width > 0 && box.height > 0
+      ? Math.min(cx - avatarHalf, box.width - cx - avatarHalf, cy + TOP_PAD - avatarHalf) -
+        RING_EDGE_PADDING
+      : OUTER_RING_HOVER_RADIUS;
+  const outerHoverRadius = Math.max(
+    OUTER_RING_REST_RADIUS,
+    Math.min(OUTER_RING_HOVER_RADIUS, maxBurstRadius)
+  );
+  const burstScale =
+    (outerHoverRadius - OUTER_RING_REST_RADIUS) /
+    (OUTER_RING_HOVER_RADIUS - OUTER_RING_REST_RADIUS);
+
   /** Places a circle's centre at `radius` px from the ring centre along `angleDeg`. */
   function orbitPosition(angleDeg: number, radius: number) {
     const rad = (angleDeg * Math.PI) / 180;
@@ -175,8 +213,8 @@ function Community({ isHovered }: { isHovered: boolean }) {
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[6px] border-blush"
             style={{ opacity: ring.opacity }}
             animate={{
-              width: isHovered ? ring.hoverSize : ring.restSize,
-              height: isHovered ? ring.hoverSize : ring.restSize,
+              width: isHovered ? ring.restSize + (ring.hoverSize - ring.restSize) * burstScale : ring.restSize,
+              height: isHovered ? ring.restSize + (ring.hoverSize - ring.restSize) * burstScale : ring.restSize,
             }}
             transition={transition}
           />
@@ -207,7 +245,10 @@ function Community({ isHovered }: { isHovered: boolean }) {
       {box.width > 0 &&
         COMMUNITY_AVATARS.map((a, i) => {
           const rest = orbitPosition(a.angleDeg, OUTER_RING_REST_RADIUS);
-          const hover = orbitPosition(a.angleDeg, OUTER_RING_HOVER_RADIUS);
+          const hover = orbitPosition(
+            a.angleDeg,
+            OUTER_RING_REST_RADIUS + (OUTER_RING_HOVER_RADIUS - OUTER_RING_REST_RADIUS) * burstScale
+          );
           const pos = isHovered ? hover : rest;
           return (
             <motion.span
@@ -216,8 +257,8 @@ function Community({ isHovered }: { isHovered: boolean }) {
               animate={{
                 left: pos.left,
                 top: pos.top,
-                width: isHovered ? a.hoverSize : a.restSize,
-                height: isHovered ? a.hoverSize : a.restSize,
+                width: isHovered ? a.restSize + (a.hoverSize - a.restSize) * burstScale : a.restSize,
+                height: isHovered ? a.restSize + (a.hoverSize - a.restSize) * burstScale : a.restSize,
               }}
               transition={transition}
             >
@@ -338,19 +379,35 @@ const PHONE_WIDTH = 275;
  * Rotation is unchanged by hover, as in the source.
  */
 const PHONES = [
-  { rotate: -7, Screen: MoodScreen, top: 43, left: 64, dx: -10 },
-  { rotate: 0, Screen: BreatheScreen, top: 31, left: 282, dx: 0 },
-  { rotate: 12, Screen: SessionsScreen, top: 52, left: 474, dx: 10 },
+  { rotate: -7, Screen: MoodDemoScreen, top: 30, left: 52, dx: -10 },
+  { rotate: 0, Screen: DiscoverDemoScreen, top: 18, left: 247, dx: 0 },
+  { rotate: 12, Screen: ToiletDemoScreen, top: 39, left: 422, dx: 10 },
 ] as const;
 
 function PhoneTrio({ isHovered }: { isHovered: boolean }) {
   const reduced = useReducedMotion();
+  const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const measure = () => setContainerWidth(el.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  /** Only shrinks the fan to fit narrower tiles; never enlarges past its natural size. */
+  const scale =
+    containerWidth > 0 ? Math.min(1, containerWidth / TRIO_CANVAS.width) : 1;
 
   return (
-    <div className="relative h-full w-full">
+    <div ref={containerRef} className="relative h-full w-full">
       <div
         className="absolute left-1/2 top-1/2"
-        style={{ ...TRIO_CANVAS, transform: "translate(-50%, 0%)" }}
+        style={{ ...TRIO_CANVAS, transform: `translate(-50%, -30%) scale(${scale})` }}
       >
         {PHONES.map(({ rotate, Screen, top, left, dx }, i) => (
           <motion.div
@@ -362,9 +419,10 @@ function PhoneTrio({ isHovered }: { isHovered: boolean }) {
             }
             transition={FAN_SHIFT}
           >
-            <PhoneFrame width={PHONE_WIDTH}>
-              <Screen />
-            </PhoneFrame>
+            <PhoneFrame
+              width={PHONE_WIDTH}
+              underlay={<Screen playing={isHovered} />}
+            />
           </motion.div>
         ))}
       </div>

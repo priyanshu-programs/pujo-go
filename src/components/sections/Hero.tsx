@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -7,7 +7,6 @@ import gsap from "gsap";
 import { PlayStoreIcon, WatchVideoIcon } from "@/components/ui/StoreIcons";
 import { heroContent } from "@/content/site";
 import { waitForIntro } from "@/components/layout/introGate";
-import { useHeroParallax } from "./useHeroParallax";
 
 /**
  * Hero — a direct build of the Figma "Hero section" frame (node 1063:55).
@@ -35,27 +34,28 @@ import { useHeroParallax } from "./useHeroParallax";
  * Reduced 30% (48px -> 33.6px) with the overlap and count-pill text scaled
  * down proportionally (14px -> 9.8px, 13px -> ~9px).
  */
-function AvatarCluster({ count }: { count: string }) {
-  const faces = [
-    "from-[#6b5b4f] to-[#3d332c]",
-    "from-[#7a5c52] to-[#463029]",
-    "from-[#5d6470] to-[#333940]",
-  ];
+const AVATAR_SRCS = [
+  "/Images/community/avatar-1.webp",
+  "/Images/community/avatar-2.webp",
+  "/Images/community/avatar-3.webp",
+];
 
+function AvatarCluster({ count }: { count: string }) {
   return (
-    <div className="group flex items-center">
-      {faces.map((gradient, i) => (
+    <div className="group flex items-center [--avatar:clamp(2.5rem,2.1rem+1.2vw,3.0625rem)]">
+      {AVATAR_SRCS.map((src, i) => (
         <div
-          key={gradient}
-          className={`relative size-[33.6px] rounded-full border-2 border-black bg-gradient-to-br ${gradient} transition-[transform,margin,box-shadow] duration-300 ease-out will-change-transform group-hover:scale-110 group-hover:ring-2 group-hover:ring-white/70 ${i === 0 ? "" : "-ml-[9.8px] group-hover:-ml-[2px]"
-            }`}
+          key={src}
+          className={`relative size-(--avatar) overflow-hidden rounded-full border-2 border-black transition-[transform,margin,box-shadow] duration-300 ease-out will-change-transform group-hover:scale-110 group-hover:ring-2 group-hover:ring-white/70 ${i === 0 ? "" : "-ml-[calc(var(--avatar)*0.29)] group-hover:-ml-0.5"}`}
           style={{ zIndex: i, transitionDelay: `${i * 40}ms` }}
-        />
+        >
+          <Image src={src} alt="" fill sizes="49px" className="object-cover" />
+        </div>
       ))}
       {/* Sits on top of the last avatar so the leading "+" stays visible. */}
       <div
-        className="relative -ml-[9.8px] flex h-[33.6px] min-w-[33.6px] items-center justify-center rounded-full border-2 border-black bg-surface px-2 text-[9px] font-bold whitespace-nowrap text-ink transition-transform duration-300 ease-out will-change-transform group-hover:scale-110 group-hover:ring-2 group-hover:ring-white/70"
-        style={{ zIndex: faces.length, transitionDelay: `${faces.length * 40}ms` }}
+        className="relative -ml-[calc(var(--avatar)*0.29)] flex h-(--avatar) min-w-[calc(var(--avatar)*1.06)] items-center justify-center rounded-full border-2 border-black bg-surface px-2 text-[calc(var(--avatar)*0.22)] font-bold whitespace-nowrap text-ink transition-transform duration-300 ease-out will-change-transform group-hover:scale-110 group-hover:ring-2 group-hover:ring-white/70"
+        style={{ zIndex: AVATAR_SRCS.length, transitionDelay: `${AVATAR_SRCS.length * 40}ms` }}
       >
         {count}
       </div>
@@ -98,21 +98,11 @@ function WatchVideoButton({ href, label }: { href: string; label: string }) {
 
 export function Hero() {
   /*
-   * Parallax wrappers: each ref sits on a plain div wrapping the actual content.
-   * The GSAP scroll-linked transform applies to the outer wrapper, while our GSAP
-   * "appear" timeline applies to the inner refs. This ensures they never write
-   * to the same node's `transform` in the same frame.
+   * Entrance refs: the GSAP "appear" timeline animates these inner nodes.
+   * Scroll parallax was removed, so these are the only transforms on hero
+   * content — the outer wrappers below are plain layout divs.
    */
   const sectionRef = useRef<HTMLElement>(null);
-
-  // Parallax outer refs
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const artworkRef = useRef<HTMLDivElement>(null);
-  const introLedeRef = useRef<HTMLDivElement>(null);
-  const avatarClusterRef = useRef<HTMLDivElement>(null);
-  const socialProofRef = useRef<HTMLDivElement>(null);
-  const asideLedeRef = useRef<HTMLDivElement>(null);
-  const ctaRowRef = useRef<HTMLDivElement>(null);
 
   // Appear inner refs
   const headlineTopRef = useRef<HTMLSpanElement>(null);
@@ -123,17 +113,6 @@ export function Hero() {
   const socialProofInnerRef = useRef<HTMLParagraphElement>(null);
   const asideLedeInnerRef = useRef<HTMLParagraphElement>(null);
   const ctaRowInnerRef = useRef<HTMLDivElement>(null);
-
-  useHeroParallax({
-    section: sectionRef,
-    headline: headlineRef,
-    artwork: artworkRef,
-    introLede: introLedeRef,
-    avatarCluster: avatarClusterRef,
-    socialProof: socialProofRef,
-    asideLede: asideLedeRef,
-    ctaRow: ctaRowRef,
-  });
 
   useEffect(() => {
     /*
@@ -223,13 +202,13 @@ export function Hero() {
       id="hero"
       ref={sectionRef}
       /*
-       * pb-[177px] is load-bearing, not decorative: useHeroParallax drifts
-       * every layer DOWN into this padding. The widest drift consumes ~70px,
-       * so the rest is headroom — do not reduce below ~120px or a blank band
-       * appears under the content on scroll. Stays a literal because it has
-       * exactly one consumer; a token here would be a rename, not a system.
+       * Mobile keeps pb-[280px] so the stacked artwork never crowds the next
+       * section. On md+ the padding is 0 and the centre artwork column
+       * (md:self-end) bottom-anchors to the grid, so the image's visual base
+       * is the section's base at exactly 0px. Parallax was removed, so no
+       * scroll headroom is needed here anymore.
        */
-      className="relative overflow-hidden bg-black pt-navbar pb-[280px] font-jakarta md:pt-[150px]"
+      className="relative overflow-hidden bg-black pt-navbar pb-[280px] font-jakarta md:pt-[150px] md:pb-0"
     >
       <div
         aria-hidden="true"
@@ -237,10 +216,7 @@ export function Hero() {
       />
 
       <div className="shell relative">
-        <h1
-          ref={headlineRef}
-          className="pointer-events-none relative z-10 text-hero-display"
-        >
+        <h1 className="pointer-events-none relative z-10 text-hero-display">
           <span
             ref={headlineTopRef}
             className="block ml-[3.33vw] text-left text-white motion-safe:opacity-0"
@@ -258,7 +234,7 @@ export function Hero() {
         <div className="mt-8 grid grid-cols-1 gap-10 md:-mt-[13vw] md:grid-cols-hero md:items-start md:gap-2 lg:-mt-[11vw]">
           {/* Left column */}
           <div className="order-2 flex flex-col md:order-1 md:pt-[3.79vw] lg:pt-[2.71vw]">
-            <div ref={introLedeRef}>
+            <div>
               <p
                 ref={introLedeInnerRef}
                 className="max-w-measure text-justify text-hero-lede text-white motion-safe:opacity-0"
@@ -268,14 +244,14 @@ export function Hero() {
             </div>
 
             <div className="mt-16">
-              <div ref={avatarClusterRef}>
+              <div>
                 <div ref={avatarClusterInnerRef} className="motion-safe:opacity-0">
                   <AvatarCluster count={heroContent.avatarCount} />
                 </div>
               </div>
             </div>
 
-            <div ref={socialProofRef}>
+            <div>
               <p
                 ref={socialProofInnerRef}
                 className="mt-4 max-w-[250px] text-hero-lede text-white motion-safe:opacity-0"
@@ -287,9 +263,18 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Centre — the cut-out artwork; stacked above the headline (z-10) so it overlaps the type */}
+          {/* Centre — the cut-out artwork; stacked above the headline (z-10) so it overlaps the type.
+              md:self-end bottom-anchors the layout box to the grid (= section base
+              once md:pb-0), so the visual base touches at 0px. Width 121.4% replaces
+              the old scale-[1.214] so the enlargement is layout, not a transform
+              overflow — this keeps the headline overlap fixed and stays exact at
+              every desktop width. md:mt-hero-artwork-drop pushes the artwork down
+              by the theme's `--spacing-hero-artwork-drop`; as a margin it grows the
+              grid row (and so the section) instead of overflowing, so nothing is
+              clipped and the side columns stay put. It sits on this outer wrapper,
+              not artworkInnerRef, which GSAP animates. */}
           <div
-            className="relative z-20 order-1 flex justify-center md:order-2 md:self-end"
+            className="relative z-20 order-1 flex justify-center md:order-2 md:mt-hero-artwork-drop md:self-end"
           >
             {/*
              * Nudged left by the theme's `--spacing-hero-artwork-shift`
@@ -299,25 +284,27 @@ export function Hero() {
              * token into `translate-x`, which Tailwind v4 has no
              * negative-token utility for.
              */}
-            <div ref={artworkRef} className="translate-x-[calc(var(--spacing-hero-artwork-shift)*-1)]">
+            <div className="translate-x-[calc(var(--spacing-hero-artwork-shift)*-1)]">
               <div ref={artworkInnerRef} className="motion-safe:opacity-0">
                 <Image
                   src="/images/hero-central-tbc.webp"
                   alt=""
                   width={975}
                   height={1286}
-                  sizes="(max-width: 810px) 92vw, (max-width: 1200px) 56vw, 668px"
+                  sizes="(max-width: 810px) 92vw, (max-width: 1200px) 61vw, 811px"
                   loading="eager"
                   fetchPriority="high"
-                  className="h-auto w-[92vw] max-w-[668px] md:w-full md:origin-top md:scale-[1.214]"
+                  className="block h-auto w-[92vw] max-w-[668px] md:w-[121.4%] md:max-w-[811px]"
                 />
               </div>
             </div>
           </div>
 
-          {/* Right column */}
-          <div className="order-3 flex flex-col gap-16 md:pt-[11.2vw] lg:pt-[10vw]">
-            <div ref={asideLedeRef}>
+          {/* Right column — z-30 keeps the CTA buttons clickable/visible above the
+              oversized (121.4%-width) centre artwork, which can visually spill
+              into this column at some desktop widths since it sits at z-20. */}
+          <div className="relative z-30 order-3 flex flex-col gap-16 md:pt-[20.38vw] lg:pt-[18.2vw]">
+            <div>
               <p
                 ref={asideLedeInnerRef}
                 className="mt-[4.17vw] max-w-measure text-justify text-hero-lede text-white motion-safe:opacity-0"
@@ -326,7 +313,7 @@ export function Hero() {
               </p>
             </div>
 
-            <div ref={ctaRowRef}>
+            <div>
               <div
                 ref={ctaRowInnerRef}
                 className="flex flex-nowrap items-center gap-2 md:justify-start md:gap-3 motion-safe:opacity-0"

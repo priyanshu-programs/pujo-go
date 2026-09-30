@@ -1,7 +1,7 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { STAGGER } from "@/lib/motion";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
-import { BreatheScreen, MoodScreen, ProgressScreen } from "@/components/mockups/Screens";
+import { GetStartedScreen, MoodScreen, ProgressScreen } from "@/components/mockups/Screens";
 import { storeLinks } from "@/content/site";
 
 function AppleBadge() {
@@ -61,14 +61,14 @@ function GoogleBadge() {
 }
 
 /**
- * Closing CTA — copy and store badges above three tilted phones
- * (+12°, −12°, −1°, matching the source's fan).
+ * Closing CTA — copy and store badges above three stacked phones
+ * (centered overlapping pile, front phone on top).
  */
 export function Cta() {
   const phones = [
-    { rotate: -12, left: "30%", Screen: MoodScreen, z: 10 },
-    { rotate: 12, left: "70%", Screen: ProgressScreen, z: 10 },
-    { rotate: -1, left: "50%", Screen: BreatheScreen, z: 20 },
+    { x: "-190px", rotate: -8, Screen: MoodScreen, z: 10 },
+    { x: "190px", rotate: 8, Screen: ProgressScreen, z: 10 },
+    { x: "0px", rotate: 0, Screen: GetStartedScreen, z: 20, underlay: true },
   ];
 
   return (
@@ -89,7 +89,7 @@ export function Cta() {
         </Reveal>
 
         <Reveal delay={STAGGER * 2}>
-          <div className="flex flex-col items-center gap-3 sm:flex-row">
+          <div className="relative z-30 flex flex-col items-center gap-3 sm:flex-row">
             <a
               href={storeLinks.apple}
               target="_blank"
@@ -112,21 +112,26 @@ export function Cta() {
         </Reveal>
       </div>
 
-      {/* Phone fan — clipped by the section, as in the source */}
-      <div className="relative mt-8 h-[320px] md:h-[380px]">
+      {/* Phone stack — centered overlapping pile, clipped by the section */}
+      <div className="relative mt-16 h-[460px] md:mt-20 md:h-[580px] lg:h-[680px]">
         {phones.map((phone, i) => (
           <div
             key={i}
-            className="absolute top-1/2"
+            className="absolute left-1/2 top-1/2"
             style={{
-              left: phone.left,
-              transform: `translate(-50%, -50%) rotate(${phone.rotate}deg)`,
+              transform: `translate(-50%, -50%) translateX(${phone.x}) rotate(${phone.rotate}deg)`,
               zIndex: phone.z,
             }}
           >
-            <PhoneFrame width={i === 2 ? 300 : 272}>
-              <phone.Screen />
-            </PhoneFrame>
+            <div className="origin-center scale-[0.5] sm:scale-[0.65] lg:scale-100">
+              {"underlay" in phone && phone.underlay ? (
+                <PhoneFrame width={320} underlay={<phone.Screen />} />
+              ) : (
+                <PhoneFrame width={320}>
+                  <phone.Screen />
+                </PhoneFrame>
+              )}
+            </div>
           </div>
         ))}
       </div>

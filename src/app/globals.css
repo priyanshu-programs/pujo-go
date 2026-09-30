@@ -37,6 +37,12 @@
   --spacing-navbar-lg: 160px; /* page-header clearance above an h1 */
   --spacing-icon: 18px; /* inline icon inside a control */
   --spacing-hero-artwork-shift: 25px; /* hero cut-out artwork's leftward nudge off grid-center */
+  /* How far the hero's centre artwork sits below its natural position. Scales
+     with the viewport (9.44vw ≈ 136px at the 1440px xl breakpoint) and stops
+     at 8.51rem (≈136px) once the shell is capped, so it tracks the layout
+     instead of being a fixed offset. Applied as a margin, so the hero grows by
+     the same amount rather than the image being clipped. */
+  --spacing-hero-artwork-drop: min(9.44vw, 8.51rem);
 
   --height-control: 52px; /* buttons, nav CTA, store badges */
 
@@ -58,8 +64,10 @@
      every card grid resolves its own column count from one rule. */
   --grid-template-columns-cards: repeat(auto-fit, minmax(300px, 1fr));
 
-  /* HowItWorks' two-track body: step list / phone stack. */
-  --grid-template-columns-split: minmax(0, 38fr) minmax(0, 62fr);
+  /* HowItWorks' two-track body: step list / phone stack. The source builds this
+     row with `flex: 1 0 0` beside `flex: 2 0 0`, so the stack gets exactly twice
+     the step list's width. */
+  --grid-template-columns-split: minmax(0, 1fr) minmax(0, 2fr);
 }
 
 @layer base {
@@ -218,10 +226,12 @@
    the keyword, which is what made the cursor revert to a system arrow.
 
    Scoped to fine pointers so touch devices, which get no overlay, keep their
-   native behaviour. The element list mirrors INTERACTIVE_SELECTOR in
-   CustomCursor.tsx: without it, anything that would have shown `pointer`
-   shows a native arrow underneath the overlay. */
-@media (hover: hover) and (pointer: fine) {
+   native behaviour. Also scoped to a min-width so it never applies below the
+   smallest real laptop screens (~1280-1366px) — only narrower windows,
+   tablets, and phones keep the native cursor. The element list mirrors
+   INTERACTIVE_SELECTOR in CustomCursor.tsx: without it, anything that would
+   have shown `pointer` shows a native arrow underneath the overlay. */
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
   html,
   a,
   button,

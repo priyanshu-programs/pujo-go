@@ -49,9 +49,9 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-soft bg-surface/40 text-ink transition-transform duration-200 hover:scale-105"
+                  className="flex h-10 w-10 items-center justify-center text-ink transition-transform duration-200 hover:scale-105"
                 >
-                  <svg viewBox="0 0 256 256" className="h-5 w-5 fill-current">
+                  <svg viewBox="0 0 256 256" className="h-10 w-10 fill-current">
                     <path d={iconPaths[social.icon]} />
                   </svg>
                 </a>
@@ -59,46 +59,47 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-8 sm:flex-row sm:gap-16">
-            {footerColumns.map((column) => (
-              <div key={column.title} className="flex flex-col gap-3">
-                <h5 className="text-eyebrow text-ink">{column.title}</h5>
-                <ul className="flex flex-col gap-2">
-                  {column.links.map((link) => (
-                    <li key={`${column.title}-${link.href}`}>
-                      <Link
-                        href={link.href}
-                        className="text-base text-muted/80 transition-colors hover:text-ink"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          {/* Nav columns and legal links share this wrapper, so both start on the same left edge */}
+          <div className="flex flex-col items-start gap-10">
+            <div className="flex flex-col gap-8 sm:flex-row sm:gap-16">
+              {footerColumns.map((column) => (
+                <div key={column.title} className="flex flex-col gap-3">
+                  <h5 className="text-eyebrow text-ink">{column.title}</h5>
+                  <ul className="flex flex-col gap-2">
+                    {column.links.map((link) => (
+                      <li key={`${column.title}-${link.href}`}>
+                        <Link
+                          href={link.href}
+                          className="text-base text-muted/80 transition-colors hover:text-ink"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            <ul className="flex flex-wrap items-center justify-start gap-4">
+              {legalLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="font-legal text-sm text-muted transition-colors hover:text-ink"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* Bottom row: copyright on the left, legal links on the right */}
-        <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:justify-between">
-          <p className="font-legal text-sm text-muted">
-            2026 Pujogo, Lorem ipsum dolor sit amet consectetur adipiscing elit.
-          </p>
-
-          <ul className="flex flex-wrap items-center justify-center gap-4">
-            {legalLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="font-legal text-sm text-muted transition-colors hover:text-ink"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* Bottom row: copyright */}
+        <p className="font-legal text-sm text-muted">
+          2026 Pujogo, Lorem ipsum dolor sit amet consectetur adipiscing elit.
+        </p>
       </div>
 
       {/* Grounding image: bleeds full-width, absolutely pinned to the footer's bottom edge

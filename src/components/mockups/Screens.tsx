@@ -1,3 +1,5 @@
+import Image from "next/image";
+import { DemoVideo } from "@/components/ui/DemoVideo";
 import { PhoneStatusBar } from "@/components/ui/PhoneFrame";
 import { moods } from "@/content/steps";
 
@@ -41,36 +43,69 @@ export function MoodScreen() {
   );
 }
 
-/** "Breathe out…" — concentric rings mid-session. */
-export function BreatheScreen() {
+/** Walkthrough encoded from the hosted GIF by `npm run demos` (see
+ *  scripts/convert-demos.mjs): ~0.5MB MP4 in place of a 4–19MB GIF. Rests on
+ *  its poster; plays only while `playing`. */
+function Demo({ name, playing }: { name: string; playing: boolean }) {
   return (
-    <div className="flex h-full flex-col">
-      <PhoneStatusBar />
-      <p className="px-[8%] pt-[6%] font-display text-[13px] text-ink">
-        Breathe out...
-      </p>
-      <div className="relative flex flex-1 items-center justify-center">
-        {[100, 74, 48].map((size, i) => (
-          <span
-            key={size}
-            aria-hidden="true"
-            className="absolute rounded-full border border-ink/15"
-            style={{
-              width: `${size}%`,
-              aspectRatio: "1",
-              opacity: 0.6 - i * 0.15,
-            }}
-          />
-        ))}
-        <span
-          aria-hidden="true"
-          className="absolute rounded-full bg-gradient-to-b from-accent/80 to-blush"
-          style={{ width: "34%", aspectRatio: "1" }}
-        />
-      </div>
-      <div className="px-[8%] pb-[10%] text-center">
-        <span className="text-[7px] font-bold text-muted">03:24 remaining</span>
-      </div>
+    <DemoVideo
+      src={`/Images/demos/${name}.mp4`}
+      poster={`/Images/demos/${name}-poster.jpg`}
+      playing={playing}
+      rate={1}
+      fit="cover"
+    />
+  );
+}
+
+export function MoodDemoScreen({ playing = false }: { playing?: boolean }) {
+  return <Demo name="mood" playing={playing} />;
+}
+
+export function DiscoverDemoScreen({ playing = false }: { playing?: boolean }) {
+  return <Demo name="discover" playing={playing} />;
+}
+
+export function ToiletDemoScreen({ playing = false }: { playing?: boolean }) {
+  return <Demo name="toilet" playing={playing} />;
+}
+
+export function ChooseDemoScreen({ playing = false }: { playing?: boolean }) {
+  return <Demo name="choose" playing={playing} />;
+}
+
+export function ListenDemoScreen({ playing = false }: { playing?: boolean }) {
+  return <Demo name="listen" playing={playing} />;
+}
+
+export function ProgressDemoScreen({ playing = false }: { playing?: boolean }) {
+  return <Demo name="progress" playing={playing} />;
+}
+
+/** Recorded breathing-session walkthrough (half speed); plays only while `playing`. */
+export function BreatheDemoScreen({ playing = false }: { playing?: boolean }) {
+  return (
+    <DemoVideo
+      src="/Images/breathe-demo.mp4"
+      poster="/Images/breathe-demo-poster.jpg"
+      playing={playing}
+    />
+  );
+}
+
+/** Static "get started" splash, drawn as a PhoneFrame underlay so it fills
+ *  the whole screen edge-to-edge, bezel over it, not around it. */
+export function GetStartedScreen() {
+  return (
+    <div className="absolute inset-0 h-full w-full">
+      <Image
+        src="/Images/get-started.avif"
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="320px"
+        className="object-cover"
+      />
     </div>
   );
 }
@@ -150,8 +185,8 @@ export function SessionsScreen() {
 }
 
 export const screenMap = {
-  mood: MoodScreen,
-  breathe: BreatheScreen,
-  progress: ProgressScreen,
+  mood: ChooseDemoScreen,
+  breathe: ListenDemoScreen,
+  progress: ProgressDemoScreen,
   sessions: SessionsScreen,
 } as const;

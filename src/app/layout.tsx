@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { CustomCursor } from "@/components/layout/CustomCursor";
+import { ClickSpark } from "@/components/layout/ClickSpark";
 import { siteConfig } from "@/content/site";
 
 // Manrope is footer legal text only.
@@ -43,9 +44,17 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col overflow-x-hidden">
         <SmoothScroll />
         <CustomCursor />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <ClickSpark
+          sparkColor="#fff"
+          sparkSize={10}
+          sparkRadius={15}
+          sparkCount={8}
+          duration={400}
+        >
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ClickSpark>
       </body>
     </html>
   );

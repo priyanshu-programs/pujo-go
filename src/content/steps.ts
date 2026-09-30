@@ -3,6 +3,11 @@
  * card and which phone sits on top of the stack.
  *
  * `screen` selects the mockup rendered inside the phone frame.
+ *
+ * NOTE: fan geometry (rotation / scale / offset / z-index) lives in
+ * `PHONE_FAN` inside `HowItWorks.tsx`, keyed by *rank* (0 = front, 1 = middle,
+ * 2 = back) rather than by step, so any step can become the front phone
+ * without breaking the fan direction.
  */
 
 export type StepScreen = "mood" | "breathe" | "progress";
@@ -12,8 +17,6 @@ export type Step = {
   title: string;
   body: string;
   screen: StepScreen;
-  /** Resting rotation of this phone in the stack (degrees). */
-  rotation: number;
 };
 
 export const howItWorksIntro = {
@@ -24,24 +27,21 @@ export const howItWorksIntro = {
 export const steps: Step[] = [
   {
     id: "choose",
-    title: "Choose How You Feel",
+    title: "Plan your Pujo",
     body: "Start by selecting your current mood—calm, stressed, or in need of focus. PujoGo curates the perfect session for you.",
     screen: "mood",
-    rotation: -6,
   },
   {
     id: "listen",
-    title: "Listen, Breathe, and Unwind",
+    title: "Capture pandals",
     body: "Whether it's a guided meditation, soothing soundscape, or deep breathing session, PujoGo helps you find your balance.",
     screen: "breathe",
-    rotation: 9,
   },
   {
     id: "progress",
-    title: "Follow Your Progress",
+    title: "Earn rewards",
     body: "Build a mindfulness habit with personalized streaks, mood tracking, and insights to help you grow.",
     screen: "progress",
-    rotation: 18,
   },
 ];
 

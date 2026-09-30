@@ -8,11 +8,23 @@ import type { CSSProperties, ReactNode } from "react";
  */
 export function PhoneFrame({
   children,
+  underlay,
   className = "",
   style,
   width = 280,
 }: {
-  children: ReactNode;
+  children?: ReactNode;
+  /**
+   * Full-phone content drawn BEHIND the frame image, so the bezel and dynamic
+   * island sit over it instead of it being cropped to the cutout. When set,
+   * the on-top screen layer is skipped and `children` is ignored.
+   *
+   * Its box is sized to the 0.4391 aspect of the app screen recordings, not to
+   * the cutout's 0.4894 — matching the media means `object-cover` neither bars
+   * nor crops it — then scaled 3% so it overlaps the cutout on every side and
+   * the overflow tucks under the bezel.
+   */
+  underlay?: ReactNode;
   className?: string;
   style?: CSSProperties;
   width?: number;
@@ -22,6 +34,21 @@ export function PhoneFrame({
       className={`relative shrink-0 drop-shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] ${className}`}
       style={{ width, aspectRatio: 933 / 1685, ...style }}
     >
+      {underlay && (
+        <div
+          className="absolute overflow-hidden bg-black"
+          style={{
+            left: "12.97%",
+            right: "13.08%",
+            top: "3.19%",
+            bottom: "3.54%",
+            borderRadius: width * 0.08,
+          }}
+        >
+          {underlay}
+        </div>
+      )}
+
       <Image
         src="/Images/phone.avif"
         alt=""
@@ -33,18 +60,20 @@ export function PhoneFrame({
       />
 
       {/* Screen — inset to the transparent cutout measured in the source image */}
-      <div
-        className="absolute overflow-hidden bg-gradient-to-b from-surface to-paper"
-        style={{
-          left: "14.1%",
-          right: "14.2%",
-          top: "9.3%",
-          bottom: "9.6%",
-          borderRadius: width * 0.1,
-        }}
-      >
-        {children}
-      </div>
+      {!underlay && (
+        <div
+          className="absolute overflow-hidden bg-gradient-to-b from-surface to-paper"
+          style={{
+            left: "14.1%",
+            right: "14.2%",
+            top: "9.3%",
+            bottom: "9.6%",
+            borderRadius: width * 0.1,
+          }}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 }

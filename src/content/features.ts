@@ -43,7 +43,7 @@ const locations: Feature = {
 const community: Feature = {
   id: "community",
   title: "Find Your Pujo People",
-  body: "Meet fellow pandal hoppers, share your discoveries, and celebrate Kolkata’s Pujo together.",
+  body: "Meet fellow pandal hoppers, share your discoveries, and celebrate Kolkata's Pujo together.",
   visual: "community",
   grow: 1,
 };

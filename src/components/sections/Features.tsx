@@ -65,7 +65,7 @@ export function Features() {
                           overflow-hidden hard-clip it into a flat edge.
                         */}
                         <div
-                          className="relative min-h-0 flex-1 overflow-hidden pt-8"
+                          className={`relative min-h-0 flex-1 overflow-hidden ${feature.visual === "phoneTrio" ? "" : "pt-8"}`}
                           style={{
                             maskImage: maskFor(feature),
                             WebkitMaskImage: maskFor(feature),

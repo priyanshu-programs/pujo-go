@@ -98,14 +98,29 @@ export function Testimonials() {
     };
   }, [loopWidth, x]);
 
+  // Only runs while the section is on screen — an always-on marquee costs
+  // frames on phones even when nobody can see it.
+  const sectionRef = useRef<HTMLElement>(null);
+  const [inView, setInView] = useState(false);
+
   useEffect(() => {
-    if (reduced || loopWidth === 0) return;
+    const section = sectionRef.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(([entry]) =>
+      setInView(entry.isIntersecting),
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (reduced || loopWidth === 0 || !inView) return;
     runLeg.current();
     return () => activeAnimation.current?.stop();
-  }, [loopWidth, reduced]);
+  }, [loopWidth, reduced, inView]);
 
   return (
-    <section id="testimonials" className="rounded-section py-20 md:py-32">
+    <section ref={sectionRef} id="testimonials" className="rounded-section py-20 md:py-32">
       <div className="shell flex flex-col gap-20">
         <Reveal>
           <h2 className="text-display-2 font-display text-ink">
@@ -117,7 +132,7 @@ export function Testimonials() {
           className="relative overflow-hidden"
           onMouseEnter={() => activeAnimation.current?.stop()}
           onMouseLeave={() => {
-            if (!reduced && loopWidth > 0) runLeg.current();
+            if (!reduced && loopWidth > 0 && inView) runLeg.current();
           }}
         >
           <motion.div ref={trackRef} className="flex w-max gap-4" style={{ x }}>
