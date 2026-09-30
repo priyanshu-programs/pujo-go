@@ -24,3 +24,6 @@ export function LegalPage({ content, path }: { content: string; path: string }) 
     </section>
   );
 }
+
+
+// Just a random text to bypass Vercel drama: forcing a deployment trigger with the authorized account.
