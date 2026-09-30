@@ -20,14 +20,14 @@ const iconPaths: Record<string, string> = {
 
 export function Footer() {
   return (
-    <footer className="rounded-t-section relative flex h-screen max-h-screen flex-col overflow-hidden bg-gradient-to-b from-paper to-blush pt-8">
+    <footer className="rounded-t-section relative flex min-h-[700px] flex-col overflow-hidden bg-gradient-to-b from-paper to-blush pt-8 pb-[48vw] lg:pb-[32vw]">
       <div className="relative z-10 shell flex flex-col gap-10">
         {/* Top row: wordmark + tagline + newsletter + socials on the left, nav columns on the right */}
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex max-w-sm flex-col gap-5">
             <Link href="/" aria-label="Pujo Go home" className="flex items-center gap-3">
               <Image
-                src="/images/pujogo-logo.webp"
+                src="/Images/pujogo-logo.webp"
                 alt=""
                 width={1182}
                 height={1181}

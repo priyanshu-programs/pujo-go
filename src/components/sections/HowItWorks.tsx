@@ -163,7 +163,7 @@ export function HowItWorks() {
       <div className="shell flex flex-col gap-20">
         <div className="flex flex-col gap-6">
           <Reveal>
-            <h2 className="text-display-2 max-w-[50%] font-display text-ink">
+            <h2 className="text-display-2 max-w-full font-display text-ink">
               {howItWorksIntro.title}
             </h2>
           </Reveal>
@@ -231,7 +231,7 @@ export function HowItWorks() {
            */}
           <div
             aria-hidden="true"
-            className="phone-composition relative ml-auto h-[clamp(420px,50vw,560px)] w-full min-w-0 max-w-[680px] mr-[clamp(32px,4vw,64px)] lg:h-[clamp(480px,38vw,580px)]"
+            className="phone-composition relative ml-auto h-[clamp(420px,50vw,560px)] w-full min-w-0 max-w-[680px] lg:mr-[clamp(32px,4vw,64px)] lg:h-[clamp(480px,38vw,580px)]"
             style={{
               maskImage: `linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) ${PHONE_FAN.fadeStop}%)`,
               WebkitMaskImage: `linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) ${PHONE_FAN.fadeStop}%)`,

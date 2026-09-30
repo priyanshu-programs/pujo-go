@@ -76,11 +76,11 @@ export function Features() {
                             isHovered={isHovered}
                           />
                         </div>
-                        <div className="flex shrink-0 flex-col gap-4 p-8">
+                        <div className="flex shrink-0 flex-col gap-4 p-5 sm:p-8">
                           <h3 className="text-display-3 font-display text-ink">
                             {feature.title}
                           </h3>
-                          <p className="text-body-lg text-muted text-justify">
+                          <p className="text-body-lg text-muted">
                             {feature.body}
                           </p>
                         </div>

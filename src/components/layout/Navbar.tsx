@@ -65,10 +65,18 @@ export function Navbar() {
   // Close on Escape.
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setOpen(false); triggerRef.current?.focus(); } };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
+
+  // Release the mobile scroll lock when switching to desktop navigation.
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1200px)");
+    const closeOnDesktop = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   // GSAP Appear Animation ("The Dhak Beat" sync)
   useEffect(() => {
@@ -102,11 +110,11 @@ export function Navbar() {
           ref={logoRef}
           href="/#hero"
           aria-label="Pujo Go home"
-          className="flex h-control items-center gap-3"
+          className="flex h-control shrink-0 items-center gap-2 sm:gap-3"
           onClick={() => setOpen(false)}
         >
           <Image
-            src="/images/pujogo-logo.webp"
+            src="/Images/pujogo-logo.webp"
             alt=""
             width={1182}
             height={1181}
@@ -115,7 +123,7 @@ export function Navbar() {
             fetchPriority="high"
             className="size-[34px] rounded-full"
           />
-          <span className="font-jakarta text-2xl font-bold tracking-tight text-white">
+          <span className="whitespace-nowrap font-jakarta text-xl sm:text-2xl font-bold tracking-tight text-white">
             PUJO <span className="text-accent">GO</span>
           </span>
         </Link>
@@ -144,18 +152,11 @@ export function Navbar() {
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="flex h-control w-control flex-col items-center justify-center gap-[7px] rounded-full border border-soft bg-surface lg:hidden"
+          className="relative flex size-12 shrink-0 items-center justify-center rounded-xl border border-soft bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:hidden"
         >
-          <span
-            className={`block h-[3px] w-6 rounded-sm bg-ink transition-transform duration-300 ${
-              open ? "translate-y-[5px] rotate-45" : ""
-            }`}
-          />
-          <span
-            className={`block h-[3px] w-6 rounded-sm bg-ink transition-transform duration-300 ${
-              open ? "-translate-y-[5px] -rotate-45" : ""
-            }`}
-          />
+          <span aria-hidden="true" className={`absolute h-0.5 w-6 rounded-full bg-white transition-transform duration-200 ${open ? "rotate-45" : "-translate-y-[7px]"}`} />
+          <span aria-hidden="true" className={`absolute h-0.5 w-6 rounded-full bg-white transition-opacity duration-200 ${open ? "opacity-0" : ""}`} />
+          <span aria-hidden="true" className={`absolute h-0.5 w-6 rounded-full bg-white transition-transform duration-200 ${open ? "-rotate-45" : "translate-y-[7px]"}`} />
         </button>
       </nav>
 
@@ -167,7 +168,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={DHAK}
-            className="mx-4 rounded-card border border-soft bg-surface p-8 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.5)] lg:hidden"
+            className="mx-4 max-h-[calc(100dvh-88px)] overflow-y-auto rounded-card border border-soft bg-surface p-8 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.5)] lg:hidden"
           >
             <ul className="flex flex-col gap-6">
               {navLinks.map((link) => (

@@ -139,7 +139,7 @@ export function Testimonials() {
             {[...testimonials, ...testimonials].map((item, i) => (
               <div
                 key={`${item.id}-${i}`}
-                className="w-[320px] shrink-0 md:w-[360px]"
+                className="w-[min(320px,calc(100vw-40px))] shrink-0 md:w-[360px]"
                 aria-hidden={i >= testimonials.length}
               >
                 <TestimonialCard item={item} />
@@ -151,11 +151,11 @@ export function Testimonials() {
               dissolve into the page background instead of cutting off. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-paper to-transparent md:w-32"
+            className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-paper to-transparent md:w-32"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-paper to-transparent md:w-32"
+            className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-paper to-transparent md:w-32"
           />
         </div>
       </div>

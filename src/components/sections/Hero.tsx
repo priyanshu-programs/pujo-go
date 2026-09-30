@@ -8,32 +8,7 @@ import { PlayStoreIcon, WatchVideoIcon } from "@/components/ui/StoreIcons";
 import { heroContent } from "@/content/site";
 import { waitForIntro } from "@/components/layout/introGate";
 
-/**
- * Hero — a direct build of the Figma "Hero section" frame (node 1063:55).
- *
- * The frame is 3552px wide, ~2.96x a 1200px design, so every Figma measurement
- * below is quoted at its 1200px-shell equivalent. The shell now caps at
- * 1340px and carries a real gutter, so those quoted figures are the design
- * baseline, not the live width.
- *
- * The defining trait of the layout is that the headline is NOT a centred block:
- * "EI PUJOTEY," is flush left, "PUJOGO?" is flush right, and the second line
- * sits at the same y as the top of the artwork so the two overlap. The artwork
- * is therefore pulled up under the headline rather than stacked beneath it.
- *
- * The 3-column body grid is a named theme token (`grid-cols-hero`, defined
- * as `--grid-template-columns-hero` in globals.css) rather than an inline
- * arbitrary value, so it reads as an explicit part of the design system.
- */
-
-/**
- * Three overlapping avatars plus a count.
- *
- * The reference renders these at ~48px with a visible ring, roughly a third
- * larger than the earlier 36px, and the count pill matches that diameter.
- * Reduced 30% (48px -> 33.6px) with the overlap and count-pill text scaled
- * down proportionally (14px -> 9.8px, 13px -> ~9px).
- */
+/** Shared hero content stacks on phones and uses three columns on wide screens. */
 const AVATAR_SRCS = [
   "/Images/community/avatar-1.webp",
   "/Images/community/avatar-2.webp",
@@ -70,7 +45,7 @@ function AvatarCluster({ count }: { count: string }) {
  * never force either the button or its label to wrap.
  */
 const heroCtaClass =
-  "inline-flex h-control w-44 shrink-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-full text-[15px] font-semibold text-white";
+  "inline-flex h-control w-full max-w-44 min-w-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-full text-[15px] font-semibold text-white";
 
 function PlayStoreButton({ href, label }: { href: string; label: string }) {
   return (
@@ -198,129 +173,54 @@ export function Hero() {
   }, []);
 
   return (
-    <section
-      id="hero"
-      ref={sectionRef}
-      /*
-       * Mobile keeps pb-[280px] so the stacked artwork never crowds the next
-       * section. On md+ the padding is 0 and the centre artwork column
-       * (md:self-end) bottom-anchors to the grid, so the image's visual base
-       * is the section's base at exactly 0px. Parallax was removed, so no
-       * scroll headroom is needed here anymore.
-       */
-      className="relative overflow-hidden bg-black pt-navbar pb-[280px] font-jakarta md:pt-[150px] md:pb-0"
-    >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[220px] bg-gradient-to-b from-transparent to-paper"
-      />
-
+    <section id="hero" ref={sectionRef} className="hero-section font-jakarta">
       <div className="shell relative">
-        <h1 className="pointer-events-none relative z-10 text-hero-display">
-          <span
-            ref={headlineTopRef}
-            className="block ml-[3.33vw] text-left text-white motion-safe:opacity-0"
-          >
+        <h1 className="hero-heading">
+          <span ref={headlineTopRef} className="block text-white motion-safe:opacity-0">
             {heroContent.headline.top}
           </span>
-          <span
-            ref={headlineBottomRef}
-            className="block mt-2 text-left text-accent md:mt-6 md:text-right motion-safe:opacity-0"
-          >
+          <span ref={headlineBottomRef} className="hero-heading-bottom block text-accent motion-safe:opacity-0">
             {heroContent.headline.bottom}
           </span>
         </h1>
 
-        <div className="mt-8 grid grid-cols-1 gap-10 md:-mt-[13vw] md:grid-cols-hero md:items-start md:gap-2 lg:-mt-[11vw]">
-          {/* Left column */}
-          <div className="order-2 flex flex-col md:order-1 md:pt-[3.79vw] lg:pt-[2.71vw]">
-            <div>
-              <p
-                ref={introLedeInnerRef}
-                className="max-w-measure text-justify text-hero-lede text-white motion-safe:opacity-0"
-              >
-                {heroContent.introLede}
-              </p>
+        <div className="hero-grid">
+          <div className="hero-intro">
+            <p ref={introLedeInnerRef} className="hero-copy motion-safe:opacity-0">
+              {heroContent.introLede}
+            </p>
+            <div ref={avatarClusterInnerRef} className="hero-avatars motion-safe:opacity-0">
+              <AvatarCluster count={heroContent.avatarCount} />
             </div>
+            <p ref={socialProofInnerRef} className="hero-copy mt-4 motion-safe:opacity-0">
+              <span className="font-semibold">{heroContent.socialProof.line1}</span>
+              <br />
+              {heroContent.socialProof.line2}
+            </p>
+          </div>
 
-            <div className="mt-16">
-              <div>
-                <div ref={avatarClusterInnerRef} className="motion-safe:opacity-0">
-                  <AvatarCluster count={heroContent.avatarCount} />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <p
-                ref={socialProofInnerRef}
-                className="mt-4 max-w-[250px] text-hero-lede text-white motion-safe:opacity-0"
-              >
-                <span className="font-semibold">{heroContent.socialProof.line1}</span>
-                <br />
-                {heroContent.socialProof.line2}
-              </p>
+          <div className="hero-aside">
+            <p ref={asideLedeInnerRef} className="hero-copy motion-safe:opacity-0">
+              {heroContent.asideLede}
+            </p>
+            <div ref={ctaRowInnerRef} className="hero-actions motion-safe:opacity-0">
+              <PlayStoreButton {...heroContent.primaryCta} />
+              <WatchVideoButton {...heroContent.secondaryCta} />
             </div>
           </div>
 
-          {/* Centre — the cut-out artwork; stacked above the headline (z-10) so it overlaps the type.
-              md:self-end bottom-anchors the layout box to the grid (= section base
-              once md:pb-0), so the visual base touches at 0px. Width 121.4% replaces
-              the old scale-[1.214] so the enlargement is layout, not a transform
-              overflow — this keeps the headline overlap fixed and stays exact at
-              every desktop width. md:mt-hero-artwork-drop pushes the artwork down
-              by the theme's `--spacing-hero-artwork-drop`; as a margin it grows the
-              grid row (and so the section) instead of overflowing, so nothing is
-              clipped and the side columns stay put. It sits on this outer wrapper,
-              not artworkInnerRef, which GSAP animates. */}
-          <div
-            className="relative z-20 order-1 flex justify-center md:order-2 md:mt-hero-artwork-drop md:self-end"
-          >
-            {/*
-             * Nudged left by the theme's `--spacing-hero-artwork-shift`
-             * token (see globals.css) rather than a bare inline pixel
-             * value, so the offset stays a named, themeable design
-             * decision — the arbitrary-value bracket only wires that
-             * token into `translate-x`, which Tailwind v4 has no
-             * negative-token utility for.
-             */}
-            <div className="translate-x-[calc(var(--spacing-hero-artwork-shift)*-1)]">
-              <div ref={artworkInnerRef} className="motion-safe:opacity-0">
-                <Image
-                  src="/images/hero-central-tbc.webp"
-                  alt=""
-                  width={975}
-                  height={1286}
-                  sizes="(max-width: 810px) 92vw, (max-width: 1200px) 61vw, 811px"
-                  loading="eager"
-                  fetchPriority="high"
-                  className="block h-auto w-[92vw] max-w-[668px] md:w-[121.4%] md:max-w-[811px]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Right column — z-30 keeps the CTA buttons clickable/visible above the
-              oversized (121.4%-width) centre artwork, which can visually spill
-              into this column at some desktop widths since it sits at z-20. */}
-          <div className="relative z-30 order-3 flex flex-col gap-16 md:pt-[20.38vw] lg:pt-[18.2vw]">
-            <div>
-              <p
-                ref={asideLedeInnerRef}
-                className="mt-[4.17vw] max-w-measure text-justify text-hero-lede text-white motion-safe:opacity-0"
-              >
-                {heroContent.asideLede}
-              </p>
-            </div>
-
-            <div>
-              <div
-                ref={ctaRowInnerRef}
-                className="flex flex-nowrap items-center gap-2 md:justify-start md:gap-3 motion-safe:opacity-0"
-              >
-                <PlayStoreButton {...heroContent.primaryCta} />
-                <WatchVideoButton {...heroContent.secondaryCta} />
-              </div>
+          <div className="hero-artwork">
+            <div ref={artworkInnerRef} className="motion-safe:opacity-0">
+              <Image
+                src="/Images/hero-central-tbc.webp"
+                alt="PujoGo pandal map on a phone held in front of Durga Puja artwork"
+                width={975}
+                height={1286}
+                sizes="(max-width: 600px) 100vw, (max-width: 1199px) 560px, 560px"
+                loading="eager"
+                fetchPriority="high"
+                className="block h-auto w-full"
+              />
             </div>
           </div>
         </div>

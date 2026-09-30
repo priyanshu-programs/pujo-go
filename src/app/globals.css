@@ -44,7 +44,7 @@
      the same amount rather than the image being clipped. */
   --spacing-hero-artwork-drop: min(9.44vw, 8.51rem);
 
-  --height-control: 52px; /* buttons, nav CTA, store badges */
+  --spacing-control: 52px; /* buttons, nav CTA, store badges */
 
   /* Measure widths — feeds max-w-* / w-* */
   --container-measure: 400px; /* short body copy beside artwork */
@@ -245,4 +245,67 @@
   [tabindex]:not([tabindex="-1"]) {
     cursor: none;
   }
+}
+
+/* Flow-based hero: copy first on touch-sized layouts, artwork between side rails on desktop. */
+.hero-section {
+  position: relative;
+  overflow: clip;
+  padding-top: 116px;
+  background: linear-gradient(to bottom, #000 75%, var(--color-paper) 100%);
+}
+.hero-heading {
+  margin: 0 auto;
+  text-align: center;
+  font-size: clamp(32px, 9.3vw, 80px);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+}
+.hero-heading-bottom { margin-top: 8px; }
+.hero-grid {
+  display: grid;
+  grid-template-areas: "intro" "aside" "art";
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 28px;
+  justify-items: center;
+  text-align: center;
+}
+.hero-intro { grid-area: intro; min-width: 0; max-width: 560px; }
+.hero-aside { grid-area: aside; min-width: 0; width: 100%; max-width: 560px; }
+.hero-copy { font-size: clamp(16px, 2vw, 18px); line-height: 1.55; color: white; }
+.hero-avatars { display: flex; justify-content: center; margin-top: 28px; }
+.hero-actions { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
+.hero-artwork {
+  grid-area: art;
+  width: 100%;
+  max-width: 560px;
+  min-width: 0;
+  mask-image: linear-gradient(to bottom, #000 68%, rgba(0,0,0,.85) 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 68%, rgba(0,0,0,.85) 78%, transparent 100%);
+}
+@media (min-width: 1200px) {
+  /* Keep the complete composition compact even on wide, short browser windows. */
+  .hero-section { padding-top: 112px; }
+  .hero-section > .shell { max-width: 1240px; }
+  .hero-heading { font-size: clamp(80px, 6.7vw, 96px); text-align: left; }
+  .hero-heading-bottom { text-align: right; margin-top: -12px; }
+  .hero-grid {
+    grid-template-areas: "intro art aside";
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 24px;
+    margin-top: 12px;
+    align-items: start;
+    text-align: left;
+  }
+  .hero-artwork {
+    width: 100%;
+    max-width: clamp(280px, calc((100svh - 332px) * 0.758), 420px);
+  }
+  .hero-intro { padding-top: 12px; }
+  .hero-aside { padding-top: 72px; }
+  .hero-avatars { justify-content: flex-start; margin-top: 24px; }
+  .hero-actions { justify-content: flex-start; gap: 10px; margin-top: 20px; }
+  .hero-actions > a { flex: 1 1 0; font-size: 14px; gap: 8px; }
 }
