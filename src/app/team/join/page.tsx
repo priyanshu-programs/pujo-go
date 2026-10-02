@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 import Link from 'next/link';
-
+ 
 function JoinContent() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
