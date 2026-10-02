@@ -1,0 +1,16 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.asur.slayers",
+      "sha256_cert_fingerprints": [
+        "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C",
+        "35:D8:00:D9:46:B3:2E:B4:49:1C:BA:2D:F0:E7:4D:ED:CB:84:2D:D9:D6:AE:5C:49:77:88:23:94:70:C8:F7:21",
+        "17:93:56:F5:F0:1C:7D:C3:76:0F:89:32:55:EF:29:93:D9:4B:F8:C9:CB:00:13:68:4B:2C:38:A8:54:92:31:35"
+      ]
+    }
+  }
+]
