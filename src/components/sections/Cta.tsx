@@ -70,11 +70,11 @@ function CentralShortScreen() {
  */
 export function Cta() {
   const phones = [
-    // Side phones show static screenshots.
-    { x: "-190px", rotate: -8, Screen: GetStartedLeftScreen, z: 10 },
-    { x: "190px", rotate: 8, Screen: GetStartedRightScreen, z: 10 },
-    // Central phone plays the YouTube Short.
-    { x: "0px", rotate: 0, Screen: CentralShortScreen, z: 20 },
+    // Side phones show static screenshots; hidden below `md`, where only the central phone is shown.
+    { x: "-190px", rotate: -8, Screen: GetStartedLeftScreen, z: 10, box: "hidden md:block", scale: "md:scale-[0.65] lg:scale-100" },
+    { x: "190px", rotate: 8, Screen: GetStartedRightScreen, z: 10, box: "hidden md:block", scale: "md:scale-[0.65] lg:scale-100" },
+    // Central phone plays the YouTube Short; enlarged below `md` since it is alone there.
+    { x: "0px", rotate: 0, Screen: CentralShortScreen, z: 20, box: "", scale: "scale-[0.95] sm:scale-110 md:scale-[0.65] lg:scale-100" },
   ];
 
   return (
@@ -116,17 +116,17 @@ export function Cta() {
       </div>
 
       {/* Phone stack — centered overlapping pile, clipped by the section */}
-      <div id="cta-phones" className="relative mt-16 scroll-mt-24 h-[460px] md:mt-20 md:h-[580px] lg:h-[680px]">
+      <div id="cta-phones" className="relative mt-16 scroll-mt-24 h-[580px] sm:h-[680px] md:mt-20 md:h-[580px] lg:h-[680px]">
         {phones.map((phone, i) => (
           <div
             key={i}
-            className="absolute left-1/2 top-1/2"
+            className={`absolute left-1/2 top-1/2 ${phone.box}`}
             style={{
               transform: `translate(-50%, -50%) translateX(${phone.x}) rotate(${phone.rotate}deg)`,
               zIndex: phone.z,
             }}
           >
-            <div className="origin-center scale-[0.5] sm:scale-[0.65] lg:scale-100">
+            <div className={`origin-center ${phone.scale}`}>
               <PhoneFrame width={320} underlay={<phone.Screen />} />
             </div>
           </div>

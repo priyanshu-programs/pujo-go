@@ -4,6 +4,8 @@ This file holds the current and upcoming plans for this repo. Before starting an
 
 ## Current
 
+- CTA on small screens shows only the central YouTube phone, enlarged (started 2026-10-04, see `updates.md`). Side phones are `hidden md:block`; central scale `0.95` (`sm:1.1`) below `md`. `md`+ unchanged. Not yet checked in a browser.
+
 - CTA side phones switch to static "get started" screens (started 2026-10-04, see `updates.md`). Left/right JPEGs converted to 640×1408 AVIF (`get-started-left/right.avif`), wired via `GetStartedLeftScreen`/`GetStartedRightScreen` in `Screens.tsx`; then orphaned images (GIFs, old phone.png/webp, old splash, etc.) and `DemoGif.tsx` deleted. Kept: `Avatar images.png` and `Images/source/*` (script inputs).
 
 - "Get started for free" (`Cta.tsx`) central phone now plays a YouTube Short (done 2026-10-03, see `updates.md`). Embedded via `YoutubeShortScreen` in `Screens.tsx` (youtube-nocookie iframe, muted loop, cover-cropped). If a self-hosted MP4 is wanted instead (no YouTube chrome/consent/network dependency), download it and use `DemoVideo` like the other demos.

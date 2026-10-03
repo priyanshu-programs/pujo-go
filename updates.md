@@ -2,6 +2,11 @@
 
 Log every code change or notable update here, most recent first. See `CLAUDE.md` for the workflow rules and `plan.md` for what's planned.
 
+## 2026-10-04 — CTA: only the central phone below `md`, enlarged
+
+- `Cta.tsx`: each phone entry now carries its own `box`/`scale` classes. Side phones are `hidden md:block` (not shown below 768px). The central phone's scale goes `0.5/0.65` → `scale-[0.95] sm:scale-110`, then `md:scale-[0.65] lg:scale-100` as before. The stack wrapper is `h-[580px] sm:h-[680px]` below `md` (was `h-[460px]`) so the larger phone isn't clipped. `md`+ is unchanged.
+- Not verified in a browser.
+
 ## 2026-10-04 — CTA side phones: static "get started" screens; stale assets removed
 
 - Converted the user's `get started left/right screen.jpeg` (1264×2780, 699 KB / 1.19 MB) with `sharp` to `public/Images/get-started-left.avif` / `get-started-right.avif`: 640×1408 (the screen is ~237 CSS px wide, so 640 covers ~2.7× DPR), AVIF q55 effort 6 → 42.6 KB / 63.3 KB. Text and map labels checked visually, still sharp.
