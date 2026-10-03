@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { DemoVideo } from "@/components/ui/DemoVideo";
 import { PhoneStatusBar } from "@/components/ui/PhoneFrame";
+import { YoutubeShort } from "@/components/ui/YoutubeShort";
 import { moods } from "@/content/steps";
 
 /**
@@ -93,13 +94,18 @@ export function BreatheDemoScreen({ playing = false }: { playing?: boolean }) {
   );
 }
 
-/** Static "get started" splash, drawn as a PhoneFrame underlay so it fills
- *  the whole screen edge-to-edge, bezel over it, not around it. */
-export function GetStartedScreen() {
+/** YouTube Short as a phone screen, with play/pause and sound buttons (see ui/YoutubeShort). */
+export function YoutubeShortScreen({ id }: { id: string }) {
+  return <YoutubeShort id={id} />;
+}
+
+/** Static app screenshot, drawn as a PhoneFrame underlay so it fills the whole
+ *  screen edge-to-edge, bezel over it, not around it. */
+function StaticScreen({ src }: { src: string }) {
   return (
     <div className="absolute inset-0 h-full w-full">
       <Image
-        src="/Images/get-started.avif"
+        src={src}
         alt=""
         aria-hidden="true"
         fill
@@ -108,6 +114,14 @@ export function GetStartedScreen() {
       />
     </div>
   );
+}
+
+export function GetStartedLeftScreen() {
+  return <StaticScreen src="/Images/get-started-left.avif" />;
+}
+
+export function GetStartedRightScreen() {
+  return <StaticScreen src="/Images/get-started-right.avif" />;
 }
 
 /** Streak calendar — the screen shown in the hero. */

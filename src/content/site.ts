@@ -47,7 +47,7 @@ export const heroContent = {
   asideLede: "Compete For Your Club, Capture Pandals, & Climb The Leaderboard.",
   avatarCount: "+5.2K",
   primaryCta: { label: "Play Store", href: storeLinks.google },
-  secondaryCta: { label: "Watch Video", href: "/#howitworks" },
+  secondaryCta: { label: "Watch Video", href: "/#cta-phones" },
 };
 
 export const footerColumns: { title: string; links: NavLink[] }[] = [

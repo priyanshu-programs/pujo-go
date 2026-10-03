@@ -4,6 +4,10 @@ This file holds the current and upcoming plans for this repo. Before starting an
 
 ## Current
 
+- CTA side phones switch to static "get started" screens (started 2026-10-04, see `updates.md`). Left/right JPEGs converted to 640×1408 AVIF (`get-started-left/right.avif`), wired via `GetStartedLeftScreen`/`GetStartedRightScreen` in `Screens.tsx`; then orphaned images (GIFs, old phone.png/webp, old splash, etc.) and `DemoGif.tsx` deleted. Kept: `Avatar images.png` and `Images/source/*` (script inputs).
+
+- "Get started for free" (`Cta.tsx`) central phone now plays a YouTube Short (done 2026-10-03, see `updates.md`). Embedded via `YoutubeShortScreen` in `Screens.tsx` (youtube-nocookie iframe, muted loop, cover-cropped). If a self-hosted MP4 is wanted instead (no YouTube chrome/consent/network dependency), download it and use `DemoVideo` like the other demos.
+
 - Footer: NAVIGATION/SUPPORT left edge aligned with "Privacy Policy" (done 2026-10-03, see `updates.md`). Footer is now one `lg:grid-cols-[1fr_auto]` grid so the nav columns and legal links share the right column. Not yet checked in a browser.
 
 - CTA store badges side by side on mobile (started 2026-10-03, see `updates.md`). `Cta.tsx` wrapper was `flex-col sm:flex-row`; now always a row with tighter padding below `sm`. Desktop untouched.

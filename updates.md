@@ -2,6 +2,57 @@
 
 Log every code change or notable update here, most recent first. See `CLAUDE.md` for the workflow rules and `plan.md` for what's planned.
 
+## 2026-10-04 — CTA side phones: static "get started" screens; stale assets removed
+
+- Converted the user's `get started left/right screen.jpeg` (1264×2780, 699 KB / 1.19 MB) with `sharp` to `public/Images/get-started-left.avif` / `get-started-right.avif`: 640×1408 (the screen is ~237 CSS px wide, so 640 covers ~2.7× DPR), AVIF q55 effort 6 → 42.6 KB / 63.3 KB. Text and map labels checked visually, still sharp.
+- `Screens.tsx`: `GetStartedScreen` became a private `StaticScreen({ src })`, exported as `GetStartedLeftScreen` / `GetStartedRightScreen`. `Cta.tsx`: side phones use them (they previously played the choose/progress demos); the `playing` flag on the phone entries is gone. Central YouTube phone untouched. `ChooseDemoScreen`/`ProgressDemoScreen` stay, as How It Works uses them.
+- Deleted, all unreferenced: the two source JPEGs, `get-started.avif`, `breathe-demo.gif`, `daily-meditation.gif`, `mood-demo.gif`, `mood-demo.mp4`, `mood-demo-poster.jpg`, `phone.png`, `phone.webp`, `hero-route-texture.svg`, and `src/components/ui/DemoGif.tsx`. Kept `Avatar images.png` and `Images/source/*` (inputs to `scripts/slice-avatars.mjs` / `remove_bg.py`).
+- `tsc --noEmit`: only a stale `.next/types` reference to the deleted `/about` page (clears when `.next` regenerates). Not verified in a browser.
+
+## 2026-10-03 — CTA side phones frozen (temporary)
+
+- `src/components/sections/Cta.tsx`: each phone entry has a `playing` flag. The two side phones are `playing: false`, so they rest on their poster frame (the video's first frame, not the frame that happened to be showing). To undo, set both back to `true`. The central YouTube phone ignores the flag.
+
+## 2026-10-03 — Hero "Watch Video" scrolls to the CTA phones
+
+- `src/content/site.ts`: `heroContent.secondaryCta.href` `/#howitworks` → `/#cta-phones`.
+- `src/components/sections/Cta.tsx`: the phone-stack wrapper gets `id="cta-phones"` and `scroll-mt-24`, so the jump lands on the three phones (not the heading) with the navbar clear. It doesn't autoplay the video; the visitor taps play.
+- Not verified in a browser.
+
+## 2026-10-03 — CTA video: fix poster/controls painting over the phone bezel
+
+- `src/components/ui/YoutubeShort.tsx`: the root is now `<div className="absolute inset-0 isolate">` instead of a fragment. The poster/buttons use `z-[5]`/`z-[6]`/`z-10`, and the `PhoneFrame` underlay box isn't a stacking context, so those z-indexes competed with the bezel image (which has none) and painted over it. `isolate` traps them inside the screen, so the bezel is on top again.
+- Not verified in a browser.
+
+## 2026-10-03 — CTA video: hide YouTube's own UI (title, prev/next, watermark)
+
+- `src/components/ui/YoutubeShort.tsx`: removed `playlist` (it was what added the previous/next buttons) and the autoplay-then-pause trick. Looping is now manual (`seekTo(0)` + `playVideo` when the player reports "ended"). A local poster, `public/Images/demos/yt-short-poster.jpg` (the video's 1080×1920 thumbnail from `i.ytimg.com`), covers the iframe whenever it isn't playing, which hides the embed's paused UI (title bar, grey play circle). The iframe is 122% tall, offset -11%, so the title flash and watermark at the top/bottom are cropped by the phone screen.
+- Only our red Shorts mark and sound button remain. Pausing mid-video shows the poster again (a live frame can't be read cross-origin).
+- Not verified in a browser: if the title or logo still flashes at the start of playback, raise the crop or delay the poster fade.
+
+## 2026-10-03 — CTA video: sound on when play is first clicked
+
+- `src/components/ui/YoutubeShort.tsx`: the first click on play now sends `unMute` before `playVideo`, so the video plays with audio; the sound button still mutes it. `soundChosenRef` makes this happen once: after the first play or any sound-button use, later plays keep the visitor's choice (muting, pausing and resuming stays muted).
+- Not verified in a browser: if a browser refuses to unmute inside the iframe, the sound button will show "off" (it follows the player's reported state) and one tap on it unmutes.
+
+## 2026-10-03 — CTA video: paused by default, Shorts-style centre play button
+
+- `src/components/ui/YoutubeShort.tsx`: the video now rests paused on its first frame. A big YouTube Shorts mark (red "S" with white play triangle) sits in the middle while paused and fades out while playing. The whole screen is the play/pause tap target. The sound button stays (bottom right); the old bottom play/pause button is gone.
+- How "paused by default" works: an embed can't start paused without showing YouTube's own play UI, so it autoplays muted under an opaque cover, is paused + rewound on the first "playing" report, then the cover lifts. If autoplay is blocked, the cover stays and the first tap plays.
+- Not verified in a browser (the first frame may flash for a moment under the cover; the Shorts icon is a hand-written SVG path of the logo).
+
+## 2026-10-03 — CTA video: play/pause and sound buttons
+
+- New `src/components/ui/YoutubeShort.tsx` (client): the iframe now has `enablejsapi=1` and two overlay buttons at the bottom of the phone screen, play/pause and sound on/off. Commands go through the IFrame API's `postMessage` protocol (no script loaded); the player's `infoDelivery` messages keep the icons in sync, e.g. if autoplay is blocked it shows "play".
+- `YoutubeShortScreen` in `Screens.tsx` is now a thin wrapper around it. Starts muted (required for autoplay); the sound button unmutes.
+- Not verified in a browser.
+
+## 2026-10-03 — CTA central phone plays a YouTube Short
+
+- `src/components/mockups/Screens.tsx`: new `YoutubeShortScreen({ id })`, a `youtube-nocookie.com` embed (autoplay, muted, loop via `playlist=id`, no controls). The iframe is 9:16 at full screen height, centered and cropped by the phone's `overflow-hidden`; `pointer-events-none` so it doesn't capture clicks.
+- `src/components/sections/Cta.tsx`: the central phone (was `ListenDemoScreen`) now uses `CentralShortScreen` → video `OChieJOAgF8`. Side phones unchanged.
+- Not verified in a browser: autoplay can be blocked by some browsers/mobile data-saver modes, and a YouTube title/overlay may flash before play.
+
 ## 2026-10-03 — Footer: nav columns align with legal links
 
 - `src/components/layout/Footer.tsx`: the top and bottom rows are now one grid (`lg:grid-cols-[1fr_auto]`, cells: brand, nav columns, copyright, legal links). The auto-width right column is as wide as the legal row, so NAVIGATION/SUPPORT start at the same left edge as "Privacy Policy". The legal links stay flush right. Mobile stacking order is unchanged.

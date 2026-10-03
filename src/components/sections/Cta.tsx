@@ -1,7 +1,7 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { STAGGER } from "@/lib/motion";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
-import { ChooseDemoScreen, ListenDemoScreen, ProgressDemoScreen } from "@/components/mockups/Screens";
+import { GetStartedLeftScreen, GetStartedRightScreen, YoutubeShortScreen } from "@/components/mockups/Screens";
 import { storeLinks } from "@/content/site";
 
 function AppleBadge() {
@@ -60,15 +60,21 @@ function GoogleBadge() {
   );
 }
 
+function CentralShortScreen() {
+  return <YoutubeShortScreen id="OChieJOAgF8" />;
+}
+
 /**
  * Closing CTA — copy and store badges above three stacked phones
  * (centered overlapping pile, front phone on top).
  */
 export function Cta() {
   const phones = [
-    { x: "-190px", rotate: -8, Screen: ChooseDemoScreen, z: 10 },
-    { x: "190px", rotate: 8, Screen: ProgressDemoScreen, z: 10 },
-    { x: "0px", rotate: 0, Screen: ListenDemoScreen, z: 20 },
+    // Side phones show static screenshots.
+    { x: "-190px", rotate: -8, Screen: GetStartedLeftScreen, z: 10 },
+    { x: "190px", rotate: 8, Screen: GetStartedRightScreen, z: 10 },
+    // Central phone plays the YouTube Short.
+    { x: "0px", rotate: 0, Screen: CentralShortScreen, z: 20 },
   ];
 
   return (
@@ -110,7 +116,7 @@ export function Cta() {
       </div>
 
       {/* Phone stack — centered overlapping pile, clipped by the section */}
-      <div className="relative mt-16 h-[460px] md:mt-20 md:h-[580px] lg:h-[680px]">
+      <div id="cta-phones" className="relative mt-16 scroll-mt-24 h-[460px] md:mt-20 md:h-[580px] lg:h-[680px]">
         {phones.map((phone, i) => (
           <div
             key={i}
@@ -121,7 +127,7 @@ export function Cta() {
             }}
           >
             <div className="origin-center scale-[0.5] sm:scale-[0.65] lg:scale-100">
-              <PhoneFrame width={320} underlay={<phone.Screen playing />} />
+              <PhoneFrame width={320} underlay={<phone.Screen />} />
             </div>
           </div>
         ))}
