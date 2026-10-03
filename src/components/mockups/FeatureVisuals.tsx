@@ -370,6 +370,15 @@ const TRIO_CANVAS = { width: 749, height: 554 } as const;
 const PHONE_WIDTH = 275;
 
 /**
+ * Below `below` px of tile width the fan is scaled up past the fit-to-width
+ * size by `boost`, so the phones (and the videos in them) stay legible on
+ * phones. The tile keeps its size; the extra width bleeds off the sides and is
+ * cropped by the band's `overflow-hidden`. Capped at natural size, so it
+ * meets the unboosted scale at the threshold with no jump.
+ */
+const SMALL_TILE = { below: 520, boost: 1.7 } as const;
+
+/**
  * Three phones at −7°, 0° and +12°, matching the source's fan.
  *
  * `top`/`left` are the source's resting offsets. On hover every phone rises
@@ -399,9 +408,12 @@ function PhoneTrio({ isHovered }: { isHovered: boolean }) {
     return () => observer.disconnect();
   }, []);
 
-  /** Only shrinks the fan to fit narrower tiles; never enlarges past its natural size. */
+  /** Fits the fan to narrower tiles (boosted on small ones, see `SMALL_TILE`); never enlarges past its natural size. */
+  const fit = containerWidth / TRIO_CANVAS.width;
   const scale =
-    containerWidth > 0 ? Math.min(1, containerWidth / TRIO_CANVAS.width) : 1;
+    containerWidth > 0
+      ? Math.min(1, containerWidth < SMALL_TILE.below ? fit * SMALL_TILE.boost : fit)
+      : 1;
 
   return (
     <div ref={containerRef} className="relative h-full w-full">

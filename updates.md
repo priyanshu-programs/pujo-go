@@ -2,6 +2,71 @@
 
 Log every code change or notable update here, most recent first. See `CLAUDE.md` for the workflow rules and `plan.md` for what's planned.
 
+## 2026-10-03 — CTA: store badges side by side on mobile
+
+- `src/components/sections/Cta.tsx`: badge wrapper `flex-col sm:flex-row` → `flex-row justify-center gap-2 sm:gap-3`, so App Store and Google Play share a row on phones. Both pills use `px-4 sm:px-6` (row ≈ 292px, fits ~360px). Desktop unchanged.
+- Not verified in a browser (320px may need `flex-wrap`).
+
+## 2026-10-03 — Bento phone trio: larger on small tiles
+
+- `src/components/mockups/FeatureVisuals.tsx`: `PhoneTrio` scale was `min(1, width / 749)`, which shrank the fan to ~0.41x in a ~310px mobile tile. New `SMALL_TILE = { below: 520, boost: 1.7 }`: below 520px tile width the fit scale is multiplied by 1.7 (~0.70x at 310px), still capped at 1. The tile size is unchanged; the outer phones now bleed off the sides and are cropped by the band's `overflow-hidden`, as in the reference. Videos scale with the frames. Tiles ≥520px are unchanged (the boosted value is already capped at 1 at the threshold, so no jump).
+- Not verified in a browser: framing/vertical offset at 390px (`translate(-50%, -30%)` may need a tweak).
+
+## 2026-10-03 — Footer: legal links on the copyright line
+
+- `src/components/layout/Footer.tsx`: the legal links (Privacy Policy / Terms & Conditions / Delete Account) moved out of the nav-column wrapper into the bottom row, on the same line as the copyright. Copyright sits left; legal links sit right, in one horizontal row. Below `lg` the row stacks, copyright first. Supersedes the 2026-09-30 (footer) placement under the nav columns. Classes and content unchanged otherwise.
+
+## 2026-10-03 — Navbar links: How It Works, Features, About, Contact
+
+- `src/content/site.ts`: `navLinks` reduced from Features / Testimonials / How it works / FAQ to **How It Works** (`/#howitworks`), **Features** (`/#features`), **About** (`/about`), **Contact** (`/contact`). The desktop row and the mobile sheet both read this array, so both update. The Play Store CTA is unchanged. Testimonials and FAQ sections remain on the homepage; they are just no longer in the nav.
+- `src/app/about/page.tsx`: new minimal `/about` page, using the same header and CTA layout as `/contact`. **Placeholder copy:** the heading and one line were written as a stand-in because no About content existed. Replace with real copy.
+- Verified: `tsc --noEmit` is clean. Not yet checked in a browser.
+
+## 2026-10-03 — How It Works: mobile arrows show availability, one subtle style
+
+- `src/components/sections/HowItWorks.tsx`: both mobile arrows now share one style, `arrowClass`. The previous solid red next button drew too much attention, and the prev button was permanently grey.
+  - **Enabled** (a card exists in that direction): the site's outline-button style (`variants.outline` in `ui/Button.tsx`): `border-2 border-ink`, `text-ink`, transparent fill, `hover:bg-ink/5`. Same white as the rest of the site.
+  - **Disabled** (`disabled` attribute): falls back to `bg-surface/40` with a muted glyph, so the end of the list reads as "nothing there."
+- **Behaviour change:** the arrows no longer wrap. Previous is disabled on the first step and next on the last. Before, next wrapped from "Earn rewards" back to "Plan your Pujo". Wrapping would make both arrows always enabled, which defeats the availability signal.
+- Verified: `tsc --noEmit` clean; the only ESLint error is the pre-existing `mounted.current` one. SSR markup has the `disabled` state and the `disabled:` variants. Not verified in a browser: the tint strength against the real background.
+
+## 2026-10-03 — How It Works: mobile card fades and eases like the fan
+
+Replaces the CSS slide from the entry below. A CSS keyframe can animate in but can't run an exit, so the outgoing card just vanished. The card now uses framer-motion, with the fan's own timings and easing, so the card and the phones above it move as one system.
+
+- `src/components/sections/HowItWorks.tsx`:
+  - **Two renders of the step list, split by breakpoint.** Desktop is `hidden lg:flex` with all three cards, as before. Mobile is a separate `lg:hidden` stack with only the active card. CSS handles the breakpoint, so no `matchMedia` hook is needed, matching the Navbar's pattern.
+  - **`StepCard`** holds the card's copy (glow, title, body). The desktop list and the mobile card both render it, so they can't drift apart.
+  - **`makeCardVariants`** builds the enter and exit from `SWEEP` and `EASE_*`. Enter fades in on `EASE_GLIDE` over `glideDuration` (0.7s), with opacity trailing by `enterDelay` (0.2s). Exit uses `EASE_SWEEP` over `exitDuration` (0.8s), holds full opacity until `fadeHoldUntil` (0.28), and dissolves by `fadeGoneBy` (0.85). These are the same curves the fan uses. The card travels `enterX` (46%) in the arrow's direction and exits the opposite way.
+  - **`AnimatePresence mode="popLayout" initial={false}`** lets the outgoing and incoming cards overlap. `initial={false}` stops the first card from animating on page load. The mobile wrapper is `overflow-hidden`, so a traveling card can't spill past the gutter.
+  - **Reduced motion** sets all durations to 0 through `makeCardVariants(reduced)`.
+  - The `dir` state (`"next" | "prev" | null`) is unchanged. It is now passed as `custom` to the variants.
+  - The desktop card no longer remounts on a step change, so its fade doesn't restart there. That was a side effect of the old CSS approach.
+- `src/app/globals.css`: removed the `--animate-slide-in-*` tokens and their `@keyframes`.
+- Verified: `tsc --noEmit` is clean. ESLint shows only the pre-existing `mounted.current` error, and the SSR markup has the desktop list and the mobile stack. Not verified in a browser: the fade and ease need a visual check at 390px.
+
+## 2026-10-03 — How It Works: mobile card slides in from the arrow's side (superseded)
+
+- `src/components/sections/HowItWorks.tsx`: below `lg`, the active step card now slides in from the side the arrow was pressed — from the right after **next**, from the left after **prev**. New `dir` state (`"next" | "prev" | null`), set only by the two arrow `onClick`s; step-title clicks keep the last direction. It starts as `null`, so nothing slides on page load: a CSS animation class present at mount would otherwise run then.
+- The active card's `key` is now `${step.id}-active-${active}` so a step change remounts it and replays the animation. Inactive cards keep their plain `step.id` key. Side effect: the active card on desktop also remounts on a step change, so its bg/opacity fade restarts there. Acceptable; desktop layout is otherwise unchanged.
+- The animation is `max-lg:animate-slide-in-right` / `max-lg:animate-slide-in-left`, plus `motion-reduce:animate-none`. The class names are written as full literals, since Tailwind won't generate a class assembled at runtime from a template.
+- `src/app/globals.css`: two `--animate-*` tokens and their `@keyframes`. Each moves 40px and fades in over 380ms on `cubic-bezier(0.22, 1, 0.36, 1)`, the same EASE_GLIDE the fan uses, so the card and fan move as one system.
+- Verified: `tsc --noEmit` clean. The only ESLint error is the pre-existing `mounted.current`-during-render one. The served CSS contains both slide classes and the reduced-motion override. Not verified in a browser: Browser MCP timed out on clicks, so the slide itself still needs a visual check at 390px.
+
+## 2026-10-03 — How It Works: ported the source's mobile variant
+
+`src/components/sections/HowItWorks.tsx` only. The desktop split (`lg:grid-cols-split`, step list left / phone fan right) is a faithful port of the Bloom Framer template; the **mobile** variant never was, and below `lg` the section degraded into a generic stack — all three step cards, *then* the fan, with the prev/next arrows orphaned a full `gap-20` (80px) below everything. Checked the source (`bloomtemplate.framer.website`) and the user's reference screenshots: its mobile variant reads **fan → arrows → the active step's card alone**, with a much larger fan whose 2nd/3rd phones run off the right edge. Now matched. Per the user: gate at `lg` (not `md`), next arrow takes the accent fill, and scale the fan up and let it bleed.
+
+- **Reordered** via `order-*` rather than duplicated markup (the repo convention — the only `*:hidden` pairs in `src/` are the Navbar's). The split row's three children are now step list `order-3 lg:order-1`, fan `order-1 lg:order-2`, arrows `order-2 lg:hidden`. Grid items honour `order`, so the `lg:` pair cancels the mobile ordering and the desktop columns land exactly where they did — the DOM order is unchanged, so nothing about the desktop render moved.
+- **The arrows moved inside the split row.** They were a sibling of it, which is why the row's `gap-20` stranded them; as `order-2` they now sit in the row's own gap, directly under the phones. Row gap tightened `gap-12` → `gap-8` below `lg` (`lg:gap-16` untouched) so they read as attached to the fan.
+- **Only the active step's card shows below `lg`** — `max-lg:hidden` on the inactive ones. Deliberately `max-lg:hidden` and *not* `hidden lg:block`: the latter would force `display:block` onto a `<button>` at desktop and change how it renders. `display:none` also takes the two hidden steps out of the tab order, leaving the arrows as the sole control, which is the source's model and is fine for a11y since both already carry `aria-label`s. Card padding `p-5` → `+ max-lg:p-6`, since 20px is tight once the card is full-bleed.
+- **Arrows restyled** 44px → 56px (`h-14 w-14`), text glyphs `‹`/`›` → a local inline `Chevron({dir})` SVG component (the repo has no icon set — `Logo`/`StoreIcons` are the only SVGs in `ui/` — and two paths don't justify a dependency; `currentColor` lets each button tint itself). Prev `bg-surface text-ink/60`, next `bg-accent text-white`: the source pairs a muted prev against its *primary button* colour for next, so this reads that pairing through this site's dark palette via `filled` in `ui/Button.tsx` rather than copying Bloom's pink/black. Added the `focus-visible:outline-accent` ring both were missing, matching `base` in `Button.tsx`.
+- **Fan scaled up below `lg`**: `.phone` `w-[min(52%,330px)]` → `+ max-lg:w-[min(76%,330px)]`, applied to **both** the active card and the ghost card — they must stay identical or a sweeping phone would change size mid-flight. No fan *geometry* changed: `PHONE_FAN`'s `left` values (0%/27%/51%) are container-relative percentages on a full-size slot and are independent of phone width, so widening the phones is what pushes the 2nd and 3rd past the container, and the section's existing `overflow-x-clip` crops them at the viewport. At a 412px viewport: container 372px, phones 283px wide starting at 0/100/190px, so right edges at 283/383/473px — one partial phone at the right edge, as in the reference. Composition height raised to suit the now ~511px-tall phone: `h-[clamp(420px,50vw,560px)]` → `h-[clamp(440px,115vw,560px)]` (`lg:h-[...]` untouched).
+- **Not touched:** `PHONE_FAN`, `SWEEP`, `FAN_RANKS`, the easings, the slot/card `motion.div` structure, the ghost list, `select()`. This was layout and ordering only — none of the tuned conveyor machinery (see the 2026-09-29/30 entries on judder and the black-flash regressions) was altered.
+- Side effect worth knowing: `PhoneFrame` computes its corner radius from the `width={330}` prop while the rendered width comes from `style={{width:"100%"}}`. The mobile phone used to render ~193px against a radius meant for 330px (13.7% instead of the intended 8%); at 283px that's now 9.3%, so the over-rounding is **reduced**, not introduced.
+- Verified in the SSR'd HTML: split-row children emit in DOM order step-list / fan / arrows with the `order-*` pairs above, `max-lg:hidden` on exactly the 2 inactive steps, `max-lg:w-[min(76%,330px)]` on all 3 phones. `tsc --noEmit` clean.
+- **Known issue this makes more visible, deliberately not fixed:** `select()` bumps the *outgoing* step's generation regardless of direction, so **previous** replays the next-direction choreography (one survivor travels backwards against the conveyor, another crosses two planes). The sweep is hard-coded one-directional — see the 2026-09-29 entry. This change promotes "previous" from a rarely-used control to one of only two affordances on mobile, sitting right under the fan, so the glitch will now be hit far more often. Fixing it means making direction drive which slot the new card is dealt into.
+
 ## 2026-09-30 — corrupted get-started.avif
 
 - `public/Images/get-started.avif` (the splash shown in the centered phone of the Cta "Get started for free" section, via `GetStartedScreen` in `Screens.tsx`) was truncated/corrupted — only 3,601 bytes, failed to decode through `sharp` with `bad seek to 3633`. That's why the section kept showing a broken/old image regardless of the code, which already pointed at the right path. No component code was wrong or changed.
@@ -62,3 +127,9 @@ Log every code change or notable update here, most recent first. See `CLAUDE.md`
 ## 2026-09-30 (footer)
 
 - `src/components/layout/Footer.tsx`: the legal links (Privacy Policy / Cookies / Terms & Conditions) now sit inside the same wrapper as the nav columns (NAVIGATION / SUPPORT / BLOG), directly beneath them, so both share one left edge. Previously the legal `ul` lived in a full-width bottom row with `md:justify-between`, which pushed it away from the nav columns' margin. The copyright line stays alone in the bottom row. Layout-only change (classNames and JSX nesting), no content or styling tokens changed.
+
+## 2026-10-03 (graft init)
+
+- Initialised graft: ran graft build (no LLM key, wiring graph only). Generated the local \graft/\ context graph: 164 nodes, 279 edges, 48 file cards across 48 TS/TSX files.
+- \.gitignore\: graph added as \/graft/\ (graft appends this automatically). \.ignore\: created by graft so ripgrep still searches \graft/\ cards.
+- No application code changed. Re-run \graft build\ after code changes to refresh the graph.

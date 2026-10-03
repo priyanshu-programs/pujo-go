@@ -89,9 +89,9 @@ export function Cta() {
         </Reveal>
 
         <Reveal delay={STAGGER * 2}>
-          <div className="relative z-30 flex flex-col items-center gap-3 sm:flex-row">
+          <div className="relative z-30 flex flex-row items-center justify-center gap-2 sm:gap-3">
             <div
-              className="flex h-control items-center justify-center rounded-full border border-soft bg-surface/60 px-6 opacity-60"
+              className="flex h-control items-center justify-center rounded-full border border-soft bg-surface/60 px-4 opacity-60 sm:px-6"
               aria-label="App Store — coming soon"
             >
               <AppleBadge />
@@ -100,7 +100,7 @@ export function Cta() {
               href={storeLinks.google}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-control items-center justify-center rounded-full bg-surface px-6 transition-transform duration-200 hover:scale-[1.03]"
+              className="flex h-control items-center justify-center rounded-full bg-surface px-4 transition-transform sm:px-6 duration-200 hover:scale-[1.03]"
               aria-label="Get it on Google Play"
             >
               <GoogleBadge />
