@@ -2,6 +2,11 @@
 
 Log every code change or notable update here, most recent first. See `CLAUDE.md` for the workflow rules and `plan.md` for what's planned.
 
+## 2026-10-03 — Footer: nav columns align with legal links
+
+- `src/components/layout/Footer.tsx`: the top and bottom rows are now one grid (`lg:grid-cols-[1fr_auto]`, cells: brand, nav columns, copyright, legal links). The auto-width right column is as wide as the legal row, so NAVIGATION/SUPPORT start at the same left edge as "Privacy Policy". The legal links stay flush right. Mobile stacking order is unchanged.
+- Not verified in a browser.
+
 ## 2026-10-03 — Removed About from navbar and deleted /about page
 
 - `src/content/site.ts`: removed the About entry from `navLinks`. The nav is now How It Works → Features → Contact. The desktop row and mobile sheet both read this array.

@@ -21,10 +21,11 @@ const iconPaths: Record<string, string> = {
 export function Footer() {
   return (
     <footer className="rounded-t-section relative flex min-h-[700px] flex-col overflow-hidden bg-gradient-to-b from-paper to-blush pt-8 pb-[48vw] lg:pb-[32vw]">
-      <div className="relative z-10 shell flex flex-col gap-10">
-        {/* Top row: wordmark + tagline + newsletter + socials on the left, nav columns on the right */}
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex max-w-sm flex-col gap-5">
+      {/* One grid so the nav columns and the legal links share the right-hand column:
+          the auto-width column is as wide as the legal row, and the nav columns start at
+          its left edge, so their left margin matches "Privacy Policy". */}
+      <div className="relative z-10 shell grid gap-10 lg:grid-cols-[1fr_auto]">
+          <div className="flex max-w-sm flex-col gap-5 lg:items-start">
             <Link href="/" aria-label="Pujo Go home" className="flex items-center gap-3">
               <Image
                 src="/Images/logo/logo.png"
@@ -59,7 +60,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-8 sm:flex-row sm:gap-16">
+          <div className="flex flex-col gap-8 sm:flex-row sm:gap-16 lg:justify-self-start">
             {footerColumns.map((column) => (
               <div key={column.title} className="flex flex-col gap-3">
                 <h5 className="text-eyebrow text-ink">{column.title}</h5>
@@ -78,15 +79,13 @@ export function Footer() {
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Bottom row: copyright on the left, legal links on the same line on the right */}
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <p className="font-legal text-sm text-muted">
+          {/* Bottom row: copyright on the left, legal links on the same line on the right */}
+          <p className="font-legal text-sm text-muted lg:self-center">
             © {new Date().getFullYear()} PujoGo. All rights reserved.
           </p>
 
-          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 lg:self-center">
             {legalLinks.map((link) => (
               <li key={link.href}>
                 <Link
@@ -98,7 +97,6 @@ export function Footer() {
               </li>
             ))}
           </ul>
-        </div>
       </div>
 
       {/* Grounding image: bleeds full-width, absolutely pinned to the footer's bottom edge

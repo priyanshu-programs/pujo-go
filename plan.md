@@ -4,6 +4,8 @@ This file holds the current and upcoming plans for this repo. Before starting an
 
 ## Current
 
+- Footer: NAVIGATION/SUPPORT left edge aligned with "Privacy Policy" (done 2026-10-03, see `updates.md`). Footer is now one `lg:grid-cols-[1fr_auto]` grid so the nav columns and legal links share the right column. Not yet checked in a browser.
+
 - CTA store badges side by side on mobile (started 2026-10-03, see `updates.md`). `Cta.tsx` wrapper was `flex-col sm:flex-row`; now always a row with tighter padding below `sm`. Desktop untouched.
 
 - Bento "phone trio" (4th tile) scaled up on small tiles (started 2026-10-03, see `updates.md`). Tile box unchanged; below a 520px tile width the fan's scale is boosted (`SMALL_TILE` in `FeatureVisuals.tsx`) so the phones and their videos are bigger and bleed off the sides, matching the reference. Desktop untouched.
