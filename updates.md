@@ -2,6 +2,12 @@
 
 Log every code change or notable update here, most recent first. See `CLAUDE.md` for the workflow rules and `plan.md` for what's planned.
 
+## 2026-10-03 — Removed About from navbar and deleted /about page
+
+- `src/content/site.ts`: removed the About entry from `navLinks`. The nav is now How It Works → Features → Contact. The desktop row and mobile sheet both read this array.
+- `src/app/about/page.tsx`: deleted the `/about` route (and its `src/app/about/` folder). It was a placeholder page. About is to be added back later.
+- Verified: `tsc --noEmit` (see the result reported in chat).
+
 ## 2026-10-03 — CTA: store badges side by side on mobile
 
 - `src/components/sections/Cta.tsx`: badge wrapper `flex-col sm:flex-row` → `flex-row justify-center gap-2 sm:gap-3`, so App Store and Google Play share a row on phones. Both pills use `px-4 sm:px-6` (row ≈ 292px, fits ~360px). Desktop unchanged.

@@ -8,7 +8,7 @@ This file holds the current and upcoming plans for this repo. Before starting an
 
 - Bento "phone trio" (4th tile) scaled up on small tiles (started 2026-10-03, see `updates.md`). Tile box unchanged; below a 520px tile width the fan's scale is boosted (`SMALL_TILE` in `FeatureVisuals.tsx`) so the phones and their videos are bigger and bleed off the sides, matching the reference. Desktop untouched.
 
-- Navbar links limited to How It Works → Features → About → Contact (started 2026-10-03, see `updates.md`). Play Store CTA kept. Creates a minimal `/about` page since no About section or route existed. Placeholder copy until the user supplies the real text.
+- Navbar links limited to How It Works → Features → Contact (started 2026-10-03, see `updates.md`). Play Store CTA kept. The About link and the `/about` page were removed on 2026-10-03 and are to be added back later.
 - graft initialised (done 2026-10-03, see `updates.md`). Local context graph lives in `graft/` (git-ignored). Use `graft ask`/`graft skeleton` before blind file reads; rebuild with `graft build` after code changes.
 - Footer: legal links moved under the nav columns in one shared wrapper so they left-align with NAVIGATION (done 2026-09-30, see `updates.md`). Not yet checked in a browser.
 

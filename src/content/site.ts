@@ -23,7 +23,6 @@ export const siteConfig = {
 export const navLinks: NavLink[] = [
   { label: "How It Works", href: "/#howitworks" },
   { label: "Features", href: "/#features" },
-  { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
 
