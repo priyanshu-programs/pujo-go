@@ -2,7 +2,12 @@
 import { STAGGER } from "@/lib/motion";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import { Reveal } from "@/components/ui/Reveal";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
 import { screenMap } from "@/components/mockups/Screens";
@@ -126,6 +131,110 @@ const SWEEP = {
  *  unmounted. Rendered outside the rank system entirely. */
 type Ghost = { uid: number; step: number };
 
+/** Direction the last arrow press moved, or `null` before any press. */
+type Dir = "next" | "prev" | null;
+
+/** Mobile card motion. Built from the fan's own numbers (`SWEEP`, `EASE_*`)
+ *  so the card and the phones above it fade and ease identically:
+ *  - enter: fades in on EASE_GLIDE, opacity trailing by `enterDelay`
+ *  - exit: fades out on EASE_SWEEP, holding full opacity until `fadeHoldUntil`
+ *    then dissolving by `fadeGoneBy` — the same curve as the phone leaving.
+ *  The card travels the same distance it enters from (`enterX`), in the
+ *  direction of the arrow, and exits the opposite way, along the conveyor. */
+function makeCardVariants(reduced: boolean): Variants {
+  const t = (seconds: number) => (reduced ? 0 : seconds);
+  const travel = (dir: Dir) => (dir === "prev" ? `-${SWEEP.enterX}` : SWEEP.enterX);
+  return {
+    enter: (dir: Dir) => ({ x: travel(dir), opacity: 0 }),
+    center: {
+      x: "0%",
+      opacity: 1,
+      transition: {
+        x: { duration: t(SWEEP.glideDuration), ease: EASE_GLIDE },
+        opacity: {
+          duration: t(SWEEP.glideDuration),
+          ease: EASE_GLIDE,
+          delay: t(SWEEP.enterDelay),
+        },
+      },
+    },
+    exit: (dir: Dir) => ({
+      x: travel(dir === "prev" ? "next" : "prev"),
+      opacity: [1, 1, 0, 0],
+      transition: {
+        x: { duration: t(SWEEP.exitDuration), ease: EASE_SWEEP },
+        opacity: {
+          duration: t(SWEEP.exitDuration),
+          times: [0, SWEEP.fadeHoldUntil, SWEEP.fadeGoneBy, 1],
+          ease: ["linear", "easeInOut", "linear"],
+        },
+      },
+    }),
+  };
+}
+
+/** A step's copy. Used by the desktop list and the mobile card, so the two
+ *  can't drift apart. The glow is only on the active step. */
+function StepCard({
+  title,
+  body,
+  isActive,
+}: {
+  title: string;
+  body: string;
+  isActive: boolean;
+}) {
+  return (
+    <>
+      <span
+        aria-hidden="true"
+        className={`bg-card-glow pointer-events-none absolute inset-0 transition-opacity duration-300 ${
+          isActive ? "opacity-40" : "opacity-0 group-hover:opacity-40"
+        }`}
+      />
+      <span className="relative flex flex-col gap-2">
+        <span className="text-body-lg font-bold text-ink">{title}</span>
+        <span
+          className={`text-base text-ink transition-opacity duration-300 ${
+            isActive ? "opacity-60" : "opacity-50"
+          }`}
+        >
+          {body}
+        </span>
+      </span>
+    </>
+  );
+}
+
+/** One style for both mobile arrows. Enabled matches the site's outline button
+ *  (`variants.outline` in ui/Button.tsx): an `ink` ring and glyph, transparent
+ *  fill, `ink/5` on hover. Disabled drops to the surface with a muted glyph,
+ *  so the end of the list reads as "nothing there". */
+const arrowClass =
+  "flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink bg-transparent text-ink transition-colors duration-300 hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default disabled:border-soft disabled:bg-surface/40 disabled:text-muted/50 disabled:hover:bg-surface/40";
+
+/** Chevron for the mobile prev/next arrows. Written inline because the repo
+ *  carries no icon set — `Logo` and `StoreIcons` are the only SVGs in `ui/`,
+ *  and two paths don't justify a dependency. `currentColor` lets each button
+ *  own its own tint. */
+function Chevron({ dir }: { dir: "prev" | "next" }) {
+  return (
+    <svg
+      aria-hidden="true"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d={dir === "prev" ? "M15 5 8 12l7 7" : "M9 5l7 7-7 7"} />
+    </svg>
+  );
+}
+
 export function HowItWorks() {
   const [active, setActive] = useState(0);
   /* One generation per step. Bumping a step's counter changes its card's key,
@@ -139,6 +248,11 @@ export function HowItWorks() {
      it, so the entry animation is armed only after that first render. */
   const mounted = useRef(false);
   const reduced = useReducedMotion();
+  /* Which arrow was last pressed. Below `lg` the mobile card travels in that
+     direction. `null` until the first press; `AnimatePresence initial={false}`
+     then keeps the first card from animating on page load. */
+  const [dir, setDir] = useState<Dir>(null);
+  const cardVariants = makeCardVariants(!!reduced);
 
   useEffect(() => {
     mounted.current = true;
@@ -174,9 +288,17 @@ export function HowItWorks() {
           </Reveal>
         </div>
 
-        <div className="flex flex-col items-center gap-12 lg:grid lg:grid-cols-split lg:items-stretch lg:gap-16">
-          {/* Step cards */}
-          <div className="flex w-full flex-col gap-9 lg:justify-center">
+        {/*
+         * Below `lg` this reads fan → arrows → active step card (the source's
+         * mobile variant); at `lg` it becomes the two-column split with the
+         * step list on the left. `order-*` does both: grid items honour it, so
+         * the `lg:order-*` pair simply cancels the mobile ordering and the
+         * columns land in DOM-independent positions.
+         */}
+        <div className="flex flex-col items-center gap-8 lg:grid lg:grid-cols-split lg:items-stretch lg:gap-16">
+          {/* Step list — desktop only. Below `lg` the active step is shown alone
+              in the stack beside it, which is what carries the animation. */}
+          <div className="hidden lg:order-1 lg:flex lg:w-full lg:flex-col lg:justify-center lg:gap-9">
             {steps.map((step, i) => {
               const isActive = i === active;
               return (
@@ -189,30 +311,33 @@ export function HowItWorks() {
                     isActive ? "bg-surface" : "hover:bg-surface/40"
                   }`}
                 >
-                  {/* Only the active step wears a card. Inactive steps are plain
-                      text at every width, but keep the same padding so the copy
-                      doesn't shift sideways when a step activates. */}
-                  <span
-                    aria-hidden="true"
-                    className={`bg-card-glow pointer-events-none absolute inset-0 transition-opacity duration-300 ${
-                      isActive ? "opacity-40" : "opacity-0 group-hover:opacity-40"
-                    }`}
-                  />
-                  <span className="relative flex flex-col gap-2">
-                    <span className="text-body-lg font-bold text-ink">
-                      {step.title}
-                    </span>
-                    <span
-                      className={`text-base text-ink transition-opacity duration-300 ${
-                        isActive ? "opacity-60" : "opacity-50"
-                      }`}
-                    >
-                      {step.body}
-                    </span>
-                  </span>
+                  <StepCard title={step.title} body={step.body} isActive={isActive} />
                 </button>
               );
             })}
+          </div>
+
+          {/* Mobile card — the active step alone. It animates with the same
+              fade and easing as the fan above it (see `CARD`). `overflow-hidden`
+              clips the card as it travels, so it never spills past the gutter. */}
+          <div className="relative order-3 w-full overflow-hidden lg:hidden">
+            <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+              <motion.div
+                key={active}
+                custom={dir}
+                variants={cardVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="relative w-full overflow-hidden rounded-2xl bg-surface p-6 text-left"
+              >
+                <StepCard
+                  title={steps[active].title}
+                  body={steps[active].body}
+                  isActive
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {/*
@@ -231,7 +356,7 @@ export function HowItWorks() {
            */}
           <div
             aria-hidden="true"
-            className="phone-composition relative ml-auto h-[clamp(420px,50vw,560px)] w-full min-w-0 max-w-[680px] lg:mr-[clamp(32px,4vw,64px)] lg:h-[clamp(480px,38vw,580px)]"
+            className="phone-composition relative order-1 ml-auto h-[clamp(440px,115vw,560px)] w-full min-w-0 max-w-[680px] lg:order-2 lg:mr-[clamp(32px,4vw,64px)] lg:h-[clamp(480px,38vw,580px)]"
             style={{
               maskImage: `linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) ${PHONE_FAN.fadeStop}%)`,
               WebkitMaskImage: `linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) ${PHONE_FAN.fadeStop}%)`,
@@ -290,7 +415,7 @@ export function HowItWorks() {
                   }
                 >
                   <motion.div
-                    className="phone absolute left-0 top-0 w-[min(52%,330px)]"
+                    className="phone absolute left-0 top-0 w-[min(52%,330px)] max-lg:w-[min(76%,330px)]"
                     /* Centre origin: the slot owns the position, so rotation
                        tilts each frame in place instead of swinging the whole
                        stack (which would break the tuned overlap). */
@@ -372,7 +497,7 @@ export function HowItWorks() {
                   }}
                 >
                   <motion.div
-                    className="phone absolute left-0 top-0 w-[min(52%,330px)]"
+                    className="phone absolute left-0 top-0 w-[min(52%,330px)] max-lg:w-[min(76%,330px)]"
                     style={{
                       transformOrigin: "center center",
                       willChange: "transform, opacity",
@@ -417,26 +542,44 @@ export function HowItWorks() {
               );
             })}
           </div>
-        </div>
 
-        {/* Mobile prev/next, matching the source's mobile variant */}
-        <div className="flex items-center justify-center gap-3 lg:hidden">
-          <button
-            type="button"
-            onClick={() => select((active - 1 + steps.length) % steps.length)}
-            aria-label="Previous step"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-surface text-ink opacity-50 transition hover:opacity-100"
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            onClick={() => select((active + 1) % steps.length)}
-            aria-label="Next step"
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-surface text-ink transition hover:scale-105"
-          >
-            ›
-          </button>
+          {/*
+           * Mobile prev/next, matching the source's mobile variant. It lives
+           * INSIDE the split row (order-2, between the fan and the card) so the
+           * row's own gap keeps it tucked under the phones; as a sibling of the
+           * row it was a full `gap-20` adrift from everything. `lg:hidden`
+           * drops it from the grid entirely at desktop.
+           */}
+          <div className="order-2 flex items-center justify-center gap-3 lg:hidden">
+            {/* Both arrows share one style. Enabled means there is a card that
+                way; at the ends the arrow goes quiet and is disabled rather than
+                wrapping. The tint is a low-alpha accent, so it reads as part of
+                the section's dark-red glow instead of a focal point. */}
+            <button
+              type="button"
+              disabled={active === 0}
+              onClick={() => {
+                setDir("prev");
+                select(active - 1);
+              }}
+              aria-label="Previous step"
+              className={arrowClass}
+            >
+              <Chevron dir="prev" />
+            </button>
+            <button
+              type="button"
+              disabled={active === steps.length - 1}
+              onClick={() => {
+                setDir("next");
+                select(active + 1);
+              }}
+              aria-label="Next step"
+              className={arrowClass}
+            >
+              <Chevron dir="next" />
+            </button>
+          </div>
         </div>
       </div>
     </section>

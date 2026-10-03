@@ -59,47 +59,46 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Nav columns and legal links share this wrapper, so both start on the same left edge */}
-          <div className="flex flex-col items-start gap-10">
-            <div className="flex flex-col gap-8 sm:flex-row sm:gap-16">
-              {footerColumns.map((column) => (
-                <div key={column.title} className="flex flex-col gap-3">
-                  <h5 className="text-eyebrow text-ink">{column.title}</h5>
-                  <ul className="flex flex-col gap-2">
-                    {column.links.map((link) => (
-                      <li key={`${column.title}-${link.href}`}>
-                        <Link
-                          href={link.href}
-                          className="text-base text-muted/80 transition-colors hover:text-ink"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-
-            <ul className="flex flex-wrap items-center justify-start gap-4">
-              {legalLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="font-legal text-sm text-muted transition-colors hover:text-ink"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <div className="flex flex-col gap-8 sm:flex-row sm:gap-16">
+            {footerColumns.map((column) => (
+              <div key={column.title} className="flex flex-col gap-3">
+                <h5 className="text-eyebrow text-ink">{column.title}</h5>
+                <ul className="flex flex-col gap-2">
+                  {column.links.map((link) => (
+                    <li key={`${column.title}-${link.href}`}>
+                      <Link
+                        href={link.href}
+                        className="text-base text-muted/80 transition-colors hover:text-ink"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Bottom row: copyright */}
-        <p className="font-legal text-sm text-muted">
-          © {new Date().getFullYear()} PujoGo. All rights reserved.
-        </p>
+        {/* Bottom row: copyright on the left, legal links on the same line on the right */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <p className="font-legal text-sm text-muted">
+            © {new Date().getFullYear()} PujoGo. All rights reserved.
+          </p>
+
+          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {legalLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="font-legal text-sm text-muted transition-colors hover:text-ink"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       {/* Grounding image: bleeds full-width, absolutely pinned to the footer's bottom edge
