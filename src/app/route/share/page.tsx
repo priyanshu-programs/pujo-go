@@ -14,7 +14,7 @@ function RouteShareContent() {
     : 'pujoapp://';
 
   // Automatically try to open the app (if they have it installed)
-  // or redirect to Play Store fallback if they don't.
+  // or redirect to Play Store fallback if they don't. 
   useEffect(() => {
     const timer = setTimeout(() => {
       window.location.href = 'https://play.google.com/store/apps/details?id=app.asur.slayers';
