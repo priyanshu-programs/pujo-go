@@ -6,7 +6,7 @@ import { storeLinks } from "@/content/site";
 
 function AppleBadge() {
   return (
-    <svg viewBox="0 0 100 40" className="h-10 w-[100px] fill-white">
+    <svg viewBox="0 0 100 40" className="h-10 w-[6.25rem] fill-white">
       <path d="M12.038 12.211c.811-.974 1.211-2.226 1.115-3.49-1.24.13-2.385.723-3.208 1.66-.807.926-1.218 2.133-1.143 3.36 1.255.006 2.444-.557 3.236-1.53ZM14.77 20.3c.03-1.694.917-3.257 2.357-4.151-.923-1.301-2.398-2.099-3.992-2.158-1.679-.176-3.307 1.005-4.163 1.005-.872 0-2.19-.987-3.608-.958a5.37 5.37 0 0 0-4.473 2.728C-1.043 20.114.4 25.036 2.252 27.742c.927 1.325 2.01 2.805 3.428 2.753 1.387-.058 1.905-.885 3.58-.885 1.658 0 2.144.885 3.59.852 1.489-.024 2.426-1.332 3.32-2.67a11.9 11.9 0 0 0 1.52-3.092c-1.761-.756-2.907-2.484-2.92-4.4Z" />
       <text
         x="25"
@@ -30,7 +30,7 @@ function AppleBadge() {
 
 function GoogleBadge() {
   return (
-    <svg viewBox="0 0 116 40" className="h-10 w-[116px]">
+    <svg viewBox="0 0 116 40" className="h-10 w-[7.25rem]">
       <path
         d="M4.6 5.2a2 2 0 0 0-.5 1.4v26.8c0 .6.2 1 .5 1.4l.1.1L19.8 20v-.4L4.7 5.1l-.1.1Z"
         fill="#fff"
@@ -71,10 +71,10 @@ function CentralShortScreen() {
 export function Cta() {
   const phones = [
     // Side phones show static screenshots; hidden below `md`, where only the central phone is shown.
-    { x: "-190px", rotate: -8, Screen: GetStartedLeftScreen, z: 10, box: "hidden md:block", scale: "md:scale-[0.65] lg:scale-100" },
-    { x: "190px", rotate: 8, Screen: GetStartedRightScreen, z: 10, box: "hidden md:block", scale: "md:scale-[0.65] lg:scale-100" },
+    { x: "-11.875rem", rotate: -8, Screen: GetStartedLeftScreen, z: 10, box: "hidden md:block", scale: "md:scale-[0.65] lg:scale-100" },
+    { x: "11.875rem", rotate: 8, Screen: GetStartedRightScreen, z: 10, box: "hidden md:block", scale: "md:scale-[0.65] lg:scale-100" },
     // Central phone plays the YouTube Short; enlarged below `md` since it is alone there.
-    { x: "0px", rotate: 0, Screen: CentralShortScreen, z: 20, box: "", scale: "scale-[0.95] sm:scale-110 md:scale-[0.65] lg:scale-100" },
+    { x: "0rem", rotate: 0, Screen: CentralShortScreen, z: 20, box: "", scale: "scale-[0.95] sm:scale-110 md:scale-[0.65] lg:scale-100" },
   ];
 
   return (
@@ -116,7 +116,7 @@ export function Cta() {
       </div>
 
       {/* Phone stack — centered overlapping pile, clipped by the section */}
-      <div id="cta-phones" className="relative mt-16 scroll-mt-24 h-[580px] sm:h-[680px] md:mt-20 md:h-[580px] lg:h-[680px]">
+      <div id="cta-phones" className="relative mt-16 scroll-mt-24 h-[36.25rem] sm:h-[42.5rem] md:mt-20 md:h-[36.25rem] lg:h-[42.5rem]">
         {phones.map((phone, i) => (
           <div
             key={i}

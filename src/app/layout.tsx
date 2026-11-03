@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { CustomCursor } from "@/components/layout/CustomCursor";
 import { ClickSpark } from "@/components/layout/ClickSpark";
+import { CookieBanner } from "@/components/layout/CookieBanner";
 import { siteConfig } from "@/content/site";
 
 // Manrope is footer legal text only.
@@ -42,6 +43,9 @@ export default function RootLayout({
       className={`${manrope.variable} ${jakarta.variable}`}
     >
       <body className="flex min-h-screen flex-col overflow-x-hidden">
+        <a href="#main" className="skip-link">
+          Skip to main content
+        </a>
         <SmoothScroll />
         <CustomCursor />
         <ClickSpark
@@ -52,9 +56,12 @@ export default function RootLayout({
           duration={400}
         >
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <main id="main" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </main>
           <Footer />
         </ClickSpark>
+        <CookieBanner />
       </body>
     </html>
   );

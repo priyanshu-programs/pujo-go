@@ -282,7 +282,7 @@ export function HowItWorks() {
             </h2>
           </Reveal>
           <Reveal delay={STAGGER}>
-            <p className="max-w-[362px] text-body-lg text-muted">
+            <p className="max-w-[22.625rem] text-body-lg text-muted">
               {howItWorksIntro.body}
             </p>
           </Reveal>
@@ -320,7 +320,7 @@ export function HowItWorks() {
           {/* Mobile card — the active step alone. It animates with the same
               fade and easing as the fan above it (see `CARD`). `overflow-hidden`
               clips the card as it travels, so it never spills past the gutter. */}
-          <div className="relative order-3 w-full overflow-hidden lg:hidden">
+          <div aria-live="polite" className="relative order-3 w-full overflow-hidden lg:hidden">
             <AnimatePresence mode="popLayout" initial={false} custom={dir}>
               <motion.div
                 key={active}
@@ -356,7 +356,7 @@ export function HowItWorks() {
            */}
           <div
             aria-hidden="true"
-            className="phone-composition relative order-1 ml-auto h-[clamp(440px,115vw,560px)] w-full min-w-0 max-w-[680px] lg:order-2 lg:mr-[clamp(32px,4vw,64px)] lg:h-[clamp(480px,38vw,580px)]"
+            className="phone-composition relative order-1 ml-auto h-[clamp(27.5rem,115vw,35rem)] w-full min-w-0 max-w-[42.5rem] lg:order-2 lg:mr-[clamp(2rem,4vw,4rem)] lg:h-[clamp(30rem,38vw,36.25rem)]"
             style={{
               maskImage: `linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) ${PHONE_FAN.fadeStop}%)`,
               WebkitMaskImage: `linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) ${PHONE_FAN.fadeStop}%)`,
@@ -415,7 +415,7 @@ export function HowItWorks() {
                   }
                 >
                   <motion.div
-                    className="phone absolute left-0 top-0 w-[min(52%,330px)] max-lg:w-[min(76%,330px)]"
+                    className="phone absolute left-0 top-0 w-[min(52%,20.625rem)] max-lg:w-[min(76%,20.625rem)]"
                     /* Centre origin: the slot owns the position, so rotation
                        tilts each frame in place instead of swinging the whole
                        stack (which would break the tuned overlap). */
@@ -497,7 +497,7 @@ export function HowItWorks() {
                   }}
                 >
                   <motion.div
-                    className="phone absolute left-0 top-0 w-[min(52%,330px)] max-lg:w-[min(76%,330px)]"
+                    className="phone absolute left-0 top-0 w-[min(52%,20.625rem)] max-lg:w-[min(76%,20.625rem)]"
                     style={{
                       transformOrigin: "center center",
                       willChange: "transform, opacity",

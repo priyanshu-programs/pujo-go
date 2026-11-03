@@ -138,10 +138,10 @@ export function Preloader() {
           alt=""
           width={1182}
           height={1181}
-          sizes="88px"
+          sizes="(min-width: 1600px) 5.5vw, 88px"
           loading="eager"
           fetchPriority="high"
-          className="size-[88px] rounded-full"
+          className="size-[5.5rem] rounded-full"
         />
       </div>
       <div ref={wordmarkRef} className="relative opacity-0">

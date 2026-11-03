@@ -23,6 +23,7 @@ export const siteConfig = {
 export const navLinks: NavLink[] = [
   { label: "How It Works", href: "/#howitworks" },
   { label: "Features", href: "/#features" },
+  { label: "Team", href: "/team" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -58,6 +59,7 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
       { label: "Features", href: "/#features" },
       { label: "Testimonials", href: "/#testimonials" },
       { label: "How it works", href: "/#howitworks" },
+      { label: "Team", href: "/team" },
     ],
   },
   {

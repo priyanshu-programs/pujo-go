@@ -54,7 +54,7 @@ export function Features() {
                 <Reveal
                   key={feature.id}
                   delay={stagger(i)}
-                  className={`h-[520px] w-full md:h-[480px] md:w-px ${growClass[feature.grow]}`}
+                  className={`h-[32.5rem] w-full md:h-[30rem] md:w-px ${growClass[feature.grow]}`}
                 >
                   <Card className="flex h-full flex-col">
                     {(isHovered) => (

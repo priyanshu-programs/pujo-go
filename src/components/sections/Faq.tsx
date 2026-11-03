@@ -47,7 +47,7 @@ export function Faq() {
             </h2>
           </Reveal>
           <Reveal delay={STAGGER}>
-            <p className="max-w-[640px] text-center text-body-lg text-muted">
+            <p className="max-w-[40rem] text-center text-body-lg text-muted">
               {faqIntro.body}
             </p>
           </Reveal>

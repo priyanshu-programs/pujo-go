@@ -2,6 +2,31 @@
 
 Log every code change or notable update here, most recent first. See `CLAUDE.md` for the workflow rules and `plan.md` for what's planned.
 
+## 2026-11-03 — Team roles set
+
+- `src/content/team.ts`: real role tags, in card order: Rahul (Graphic Designer), Sourik (Co-Creator, Backend Developer), Sashikant (Co-Creator, Lead App Developer), Nirvik (Co-Creator, Dev Ops Lead), Priyanshu (Website Designer, Developer), Rudranil (Co-Creator, Product Lead).
+
+## 2026-11-03 — Team page: header and handle bubble removed
+
+- `src/app/team/page.tsx`: removed the "Meet the team" title/lede hero section and the red `@handle` hover bubble on each card. The grid section now takes `pt-[208px]` (160px `pt-navbar-lg` + 30%, per the user) so cards clear the fixed navbar. `teamHeader.lede` is still used for page metadata; `handle` stays in `team.ts` data, unrendered.
+
+## 2026-11-03 — Team photos optimised
+
+- `public/Images/Team/`: replaced the 6 source JPEGs (~1.6 MB, Priyanshu's alone 1.4 MB) with AVIFs (`rahul`, `sourik`, `sashikant`, `nirvik`, `priyanshu`, `rudranil`), 41-94 KB each (~410 KB total). Center-cropped to 4:5 (same crop the card's `object-cover` applies), downscaled to max 840x1050 (2x the card), never upscaled, quality 84 / effort 6. Originals deleted.
+- `src/content/team.ts`: `teamMembers` reordered to Rahul, Sourik, Sashikant, Nirvik, Priyanshu, Rudranil.
+
+## 2026-11-03 — Team tab and `/team` page (placeholders)
+
+- `src/content/site.ts`: `navLinks` gains **Team** (`/team`) between Features and Contact; also added to the footer Navigation column. Navbar desktop row and mobile sheet read the array, so no Navbar edit.
+- `src/content/team.ts` (new): placeholder `teamHeader`, 6 `teamMembers` (name, roles, optional `handle`, optional `image`), 3 `teamStats`. Replace with real details later.
+- `src/app/team/page.tsx` (new): header (same pattern as `/contact`), 3x2 portrait grid (1/2/3 cols by breakpoint) with bottom-left `#role` pills and an accent `@handle` speech-bubble, then 3 stat tiles (dark / accent / light), then `Cta`. Without an `image` a gradient placeholder shows; with one, it renders grayscale like the reference. The red accent stands in for the reference's orange. `/team/join` untouched.
+- Not verified in a browser.
+- Follow-up (same day): removed the three stat tiles (and `teamStats`/`TeamStat`). The red `@handle` bubble is now hidden by default and fades in on hover (`group-hover`) on any card; every placeholder member has a `handle`. Touch devices have no hover, so the handle won't show there.
+
+- Photos (same day): the 6 files in `public/Images/Team/` were center-cropped to 4:5 (the card ratio), resized to max 840×1050 (never upscaled) and converted with `sharp` to AVIF q55 (3.8–41 KB each, down from 16 KB–1.6 MB originals). Originals deleted; only `nirvik/priyanshu/rahul/rudranil/sashikant/sourik.avif` remain. Wired through `image` in `src/content/team.ts`, and member names now come from the filenames (roles/handles still placeholders). `sashikant.avif` is only 160×200 because the source was 200×200, so it will look soft on large cards; a higher-res original would fix it.
+
+- Removed the `grayscale` filter from team photos; they show in full colour.
+
 ## 2026-10-04 — CTA: only the central phone below `md`, enlarged
 
 - `Cta.tsx`: each phone entry now carries its own `box`/`scale` classes. Side phones are `hidden md:block` (not shown below 768px). The central phone's scale goes `0.5/0.65` → `scale-[0.95] sm:scale-110`, then `md:scale-[0.65] lg:scale-100` as before. The stack wrapper is `h-[580px] sm:h-[680px]` below `md` (was `h-[460px]`) so the larger phone isn't clipped. `md`+ is unchanged.
@@ -200,3 +225,34 @@ Replaces the CSS slide from the entry below. A CSS keyframe can animate in but c
 - Initialised graft: ran graft build (no LLM key, wiring graph only). Generated the local \graft/\ context graph: 164 nodes, 279 edges, 48 file cards across 48 TS/TSX files.
 - \.gitignore\: graph added as \/graft/\ (graft appends this automatically). \.ignore\: created by graft so ripgrep still searches \graft/\ cards.
 - No application code changed. Re-run \graft build\ after code changes to refresh the graph.
+
+## 2026-11-03 (cookie banner + accessibility)
+
+- Audit: site has no tracking pixels/analytics. Only third-party load is the YouTube-nocookie embed in the CTA.
+- `src/components/layout/CookieBanner.tsx` (new, mounted in `layout.tsx`): bottom-right cookie card styled after the user's reference (white card, black outline, offset grey shadow, "Cookies" + X, Accept / Preferences, cookie illustration). Slides in from bottom-right (fade only under reduced motion), waits for the homepage intro. Preferences shows Essential (always on) + a "Media & experience" switch. Choice saved to localStorage `pujogo-cookies`; X = essential only. It does not gate any content.
+  - A first version with a consent store (`lib/consent.ts`), YouTube gating, a `/cookies` policy page and a footer "Cookie settings" link was built and then fully reverted per the user; `YoutubeShort.tsx`, `site.ts`, `LegalPage.tsx`, `documents.json` are back to their committed state.
+- Accessibility (WCAG 2.1 AA): skip-to-content link + `id="main"` on `<main>` (`layout.tsx`, `.skip-link` in `globals.css`); global `:focus-visible` outline; contact inputs get a focus ring and full-contrast placeholders; `/team` gets an sr-only `<h1>`, a list structure and visible member names (images now `alt=""`); testimonials marquee has a pause/play button and pauses on hover/focus (WCAG 2.2.2); footer column titles `h5` -> `h2` (no visual change); HowItWorks mobile step card is an `aria-live="polite"` region.
+
+- Follow-up (2026-11-03): `CookieBanner.tsx` recoloured to the site theme (surface card, soft border, blush offset shadow, red accent Accept pill, soft Preferences pill, muted copy) and scaled to ~50% (300px wide, smaller type/buttons/cookie art). It now rolls in 2s after load (`SHOW_DELAY_MS`), counted after the homepage intro curtain.
+- Follow-up (2026-11-03): restored the Team links in `src/content/site.ts` (navbar How It Works → Features → Team → Contact, and footer Navigation "Team"). They were uncommitted work that got wiped when `site.ts` was `git checkout`-ed during the cookie revert. Added a themed page scrollbar in `globals.css` (red accent thumb on the paper background; `scrollbar-color` + `::-webkit-scrollbar` for Safari).
+- Follow-up (2026-11-03): `/team` section background now uses the site's gradient language (paper → surface → blush wash, `rounded-b-section`, plus a red bloom top-right and a blush bloom on the left). Per the user, the gradient is background-only: the cards, photo overlay and `#role` tags are unchanged (a card-glow/tag-gradient version was tried and reverted).
+- Follow-up (2026-11-03): `/team` section no longer has `rounded-b-section`; its gradient now runs paper → surface → blush (60%) → paper, so it fades into the CTA below with no hard edge.
+- Follow-up (2026-11-03): `src/content/team.ts` member names set to full names (Rahul Sinha, Sourik Ray, Sashikant Prasad, Nirvik Ghosh, Priyanshu Roy, Rudranil Bhattacharjee).
+- Follow-up (2026-11-03): Sashikant's card showed his old photo after `public/Images/Team/sashikant.avif` was replaced under the same name. Cause: Next's image optimizer cache (`.next/dev/cache/images`, keyed by URL). Cleared it; no code change. Replacing a photo in place needs the same cache clear (or a new filename).
+- Follow-up (2026-11-03): `/team` photos zoom subtly on card hover (scale 1.06 over 1.2s, expo-out `cubic-bezier(0.16,1,0.3,1)`, CSS transform only; off under reduced motion). Card got `isolate` so the rounded clip stays crisp in Safari during the transform.
+- Follow-up (2026-11-03): `CookieBanner.tsx` copy cut from ~35 words to "We use cookies to run the site and play videos. Privacy Policy." The user found the old text cluttered in the 300px card. Dropped the "By clicking accept, you agree…" line; the Privacy Policy link stays.
+- Follow-up (2026-11-03): cursor tooltip on team photos. `CustomCursor.tsx` now reads `data-cursor-label` from the hovered element and swaps the alta hand for a red (`bg-accent`) tooltip pill with an up-pointing tail at the pointer, scaling/fading in from its top-left corner (300ms expo-out). `/team` cards set it to the member's handle, falling back to their name while handles are the `@handle` placeholder. Desktop fine-pointer only, like the custom cursor itself.
+- Follow-up (2026-11-03): team cards can show LinkedIn + Instagram buttons (top-right, red `bg-accent` circles) that fade/slide in on card hover or keyboard focus (500ms expo-out, 60ms stagger; always visible on touch screens). New optional `linkedin`/`instagram` URL fields on `TeamMember` in `src/content/team.ts`; a button renders only when its URL is set (none set yet). Over a button the cursor tooltip reads "LinkedIn"/"Instagram". Footer social SVGs moved into shared `src/components/ui/SocialIcon.tsx` (adds a LinkedIn glyph); footer looks the same.
+- Follow-up (2026-11-03): filled `instagram` + `linkedin` for all six members in `src/content/team.ts`, so the card social buttons now render. Instagram share-tracking query strings (`?stkn=`, `?obrf=`) were stripped from the supplied URLs.
+- Follow-up (2026-11-03): team order changed to Rudranil, Sashikant, Sourik, Nirvik, Rahul, Priyanshu (`src/content/team.ts`).
+
+## 2026-11-03 (large-screen responsive pass)
+
+- Problem: content stopped at the 1340px shell and nearly every size was fixed px, so on 2560×1440 the site sat small in the middle with wide empty margins. User chose proportional scale-up.
+- `src/app/globals.css`: `html { font-size: max(100%, 1vw) }`. Root stays 16px (or the user's default) up to a 1600px viewport, then grows: 19.2px at 1920, 25.6px at 2560, so wide screens show the 1600px composition scaled up. All theme tokens (spacing, containers incl. shell `83.75rem`, radii, card grid min), display/eyebrow/body utilities, hero CSS and the clamp min/max caps moved px → rem (N/16). Breakpoints, hairlines, focus outlines, skip link and scrollbar stay px.
+- Components: every arbitrary `[Npx]` Tailwind value (>2px; not shadows/borders/radii/blur) converted to rem across Navbar, Footer, Preloader, CookieBanner, Hero, HowItWorks, Features, Testimonials, Faq, Cta, Screens, PhoneFrame, FeatureVisuals, `/team`. CTA side-phone offsets `±190px` → `±11.875rem`; `/team` background gradient ellipses → rem. `CustomCursor`/`ClickSpark` intentionally untouched (pointer chrome).
+- `src/components/ui/PhoneFrame.tsx`: `width` prop is still a px design value but renders as rem (box, corner radii), so phones grow with the root.
+- New `src/lib/useRootScale.ts` (root font size / 16, updates on resize). `FeatureVisuals.tsx` `Community` multiplies its ring/avatar/padding px by it; `PhoneTrio` scales its 749×554 canvas and phone offsets by it so the canvas matches the rem-sized phones inside.
+- `next/image` `sizes` hints that were fixed px now add a `(min-width: 1600px) N/16 vw` entry so the larger render picks a sharp source (Navbar, Footer, Preloader, Hero, FeatureVisuals, Screens, YoutubeShort, PhoneFrame, `/team`).
+- Rule from here on: layout sizes go in rem, not px, or they won't scale on large screens. Px numbers fed through JS should be multiplied by `useRootScale()`.
+- `tsc --noEmit` and eslint clean. Browser sweep (Browser MCP iframe emulation, 320–2560) pending: Browser MCP was paused.

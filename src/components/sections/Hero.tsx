@@ -24,7 +24,7 @@ function AvatarCluster({ count }: { count: string }) {
           className={`relative size-(--avatar) overflow-hidden rounded-full border-2 border-black transition-[transform,margin,box-shadow] duration-300 ease-out will-change-transform group-hover:scale-110 group-hover:ring-2 group-hover:ring-white/70 ${i === 0 ? "" : "-ml-[calc(var(--avatar)*0.29)] group-hover:-ml-0.5"}`}
           style={{ zIndex: i, transitionDelay: `${i * 40}ms` }}
         >
-          <Image src={src} alt="" fill sizes="49px" className="object-cover" />
+          <Image src={src} alt="" fill sizes="(min-width: 1600px) 3.0625vw, 49px" className="object-cover" />
         </div>
       ))}
       {/* Sits on top of the last avatar so the leading "+" stays visible. */}
@@ -45,7 +45,7 @@ function AvatarCluster({ count }: { count: string }) {
  * never force either the button or its label to wrap.
  */
 const heroCtaClass =
-  "inline-flex h-control w-full max-w-44 min-w-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-full text-[15px] font-semibold text-white";
+  "inline-flex h-control w-full max-w-44 min-w-0 items-center justify-center gap-2.5 whitespace-nowrap rounded-full text-[0.9375rem] font-semibold text-white";
 
 function PlayStoreButton({ href, label }: { href: string; label: string }) {
   return (
@@ -65,7 +65,7 @@ function WatchVideoButton({ href, label }: { href: string; label: string }) {
       href={href}
       className={`${heroCtaClass} border-[3px] border-white transition-colors duration-200 hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
     >
-      <WatchVideoIcon className="size-[22px] shrink-0" />
+      <WatchVideoIcon className="size-[1.375rem] shrink-0" />
       {label}
     </Link>
   );
@@ -216,7 +216,7 @@ export function Hero() {
                 alt="PujoGo pandal map on a phone held in front of Durga Puja artwork"
                 width={975}
                 height={1286}
-                sizes="(max-width: 600px) 100vw, (max-width: 1199px) 560px, 560px"
+                sizes="(max-width: 600px) 100vw, (min-width: 1600px) 35vw, 560px"
                 loading="eager"
                 fetchPriority="high"
                 className="block h-auto w-full"

@@ -27,7 +27,7 @@ function TestimonialCard({ item }: { item: Testimonial }) {
   const gradient = `linear-gradient(${item.angle}deg, #1a1a1a, #fe0000)`;
 
   return (
-    <figure className="group relative flex h-full min-h-[380px] flex-col justify-between overflow-hidden rounded-card border border-soft bg-surface p-8">
+    <figure className="group relative flex h-full min-h-[23.75rem] flex-col justify-between overflow-hidden rounded-card border border-soft bg-surface p-8">
       <span
         aria-hidden="true"
         className="bg-card-glow pointer-events-none absolute inset-0 opacity-40 group-hover:opacity-80"
@@ -35,7 +35,7 @@ function TestimonialCard({ item }: { item: Testimonial }) {
       <div className="relative flex flex-col gap-6">
         <span
           aria-hidden="true"
-          className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full"
+          className="flex h-[3.25rem] w-[3.25rem] shrink-0 items-center justify-center rounded-full"
           style={{ background: gradient }}
         >
           <PersonAvatarIcon />
@@ -113,33 +113,53 @@ export function Testimonials() {
     return () => observer.disconnect();
   }, []);
 
+  // WCAG 2.2.2: auto-moving content needs a way to stop it. Hover and keyboard
+  // focus pause it for the moment; the button pauses it until pressed again
+  // (the only option on touch screens).
+  const [userPaused, setUserPaused] = useState(false);
+  const [held, setHeld] = useState(false);
+  const running = !reduced && loopWidth > 0 && inView && !userPaused && !held;
+
   useEffect(() => {
-    if (reduced || loopWidth === 0 || !inView) return;
+    if (!running) return;
     runLeg.current();
     return () => activeAnimation.current?.stop();
-  }, [loopWidth, reduced, inView]);
+  }, [running]);
 
   return (
     <section ref={sectionRef} id="testimonials" className="rounded-section py-20 md:py-32">
       <div className="shell flex flex-col gap-20">
-        <Reveal>
+        <Reveal className="flex items-end justify-between gap-6">
           <h2 className="text-display-2 font-display text-ink">
             {testimonialsIntro.title}
           </h2>
+          {!reduced && (
+            <button
+              type="button"
+              aria-pressed={userPaused}
+              aria-label={userPaused ? "Play testimonials" : "Pause testimonials"}
+              onClick={() => setUserPaused((p) => !p)}
+              className="flex size-11 shrink-0 items-center justify-center rounded-full border border-soft bg-surface text-ink transition-colors hover:bg-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              <svg viewBox="0 0 24 24" className="size-5 fill-current" aria-hidden="true">
+                {userPaused ? <path d="M8 5v14l11-7z" /> : <path d="M7 5h4v14H7zm6 0h4v14h-4z" />}
+              </svg>
+            </button>
+          )}
         </Reveal>
 
         <div
           className="relative overflow-hidden"
-          onMouseEnter={() => activeAnimation.current?.stop()}
-          onMouseLeave={() => {
-            if (!reduced && loopWidth > 0 && inView) runLeg.current();
-          }}
+          onMouseEnter={() => setHeld(true)}
+          onMouseLeave={() => setHeld(false)}
+          onFocus={() => setHeld(true)}
+          onBlur={() => setHeld(false)}
         >
           <motion.div ref={trackRef} className="flex w-max gap-4" style={{ x }}>
             {[...testimonials, ...testimonials].map((item, i) => (
               <div
                 key={`${item.id}-${i}`}
-                className="w-[min(320px,calc(100vw-40px))] shrink-0 md:w-[360px]"
+                className="w-[min(20rem,calc(100vw-2.5rem))] shrink-0 md:w-[22.5rem]"
                 aria-hidden={i >= testimonials.length}
               >
                 <TestimonialCard item={item} />

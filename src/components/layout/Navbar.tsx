@@ -20,7 +20,7 @@ function SlideLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className="group relative flex h-10 items-center justify-center overflow-hidden px-5 font-jakarta text-[17px] font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      className="group relative flex h-10 items-center justify-center overflow-hidden px-5 font-jakarta text-[1.0625rem] font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       <span className="relative block">
         <span className="block transition-transform duration-300 ease-out group-hover:-translate-y-[140%]">
@@ -105,7 +105,7 @@ export function Navbar() {
         scrolled ? "bg-black/85 md:bg-black/30 md:backdrop-blur-lg md:backdrop-saturate-150" : "bg-transparent"
       }`}
     >
-      <nav className="shell flex h-[68px] items-center justify-between gap-6 md:h-[66px]">
+      <nav className="shell flex h-[4.25rem] items-center justify-between gap-6 md:h-[4.125rem]">
         <Link
           ref={logoRef}
           href="/#hero"
@@ -118,10 +118,10 @@ export function Navbar() {
             alt=""
             width={1182}
             height={1181}
-            sizes="34px"
+            sizes="(min-width: 1600px) 2.125vw, 34px"
             loading="eager"
             fetchPriority="high"
-            className="size-[34px] rounded-full"
+            className="size-[2.125rem] rounded-full"
           />
           <span className="whitespace-nowrap font-jakarta text-xl sm:text-2xl font-bold tracking-tight text-white">
             PUJO <span className="text-accent">GO</span>
@@ -138,7 +138,7 @@ export function Navbar() {
         <Link
           ref={ctaRef}
           href={navCta.href}
-          className="hidden h-control items-center gap-2.5 rounded-full bg-accent px-7 font-jakarta text-[15px] font-semibold text-white shadow-[0_10px_26px_-4px_rgba(254,0,0,0.35)] transition-transform duration-200 hover:scale-[1.03] lg:inline-flex"
+          className="hidden h-control items-center gap-2.5 rounded-full bg-accent px-7 font-jakarta text-[0.9375rem] font-semibold text-white shadow-[0_10px_26px_-4px_rgba(254,0,0,0.35)] transition-transform duration-200 hover:scale-[1.03] lg:inline-flex"
         >
           <PlayStoreIcon className="size-icon shrink-0" />
           {navCta.label}
@@ -154,9 +154,9 @@ export function Navbar() {
           aria-label={open ? "Close menu" : "Open menu"}
           className="relative flex size-12 shrink-0 items-center justify-center rounded-xl border border-soft bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:hidden"
         >
-          <span aria-hidden="true" className={`absolute h-0.5 w-6 rounded-full bg-white transition-transform duration-200 ${open ? "rotate-45" : "-translate-y-[7px]"}`} />
+          <span aria-hidden="true" className={`absolute h-0.5 w-6 rounded-full bg-white transition-transform duration-200 ${open ? "rotate-45" : "-translate-y-[0.4375rem]"}`} />
           <span aria-hidden="true" className={`absolute h-0.5 w-6 rounded-full bg-white transition-opacity duration-200 ${open ? "opacity-0" : ""}`} />
-          <span aria-hidden="true" className={`absolute h-0.5 w-6 rounded-full bg-white transition-transform duration-200 ${open ? "-rotate-45" : "translate-y-[7px]"}`} />
+          <span aria-hidden="true" className={`absolute h-0.5 w-6 rounded-full bg-white transition-transform duration-200 ${open ? "-rotate-45" : "translate-y-[0.4375rem]"}`} />
         </button>
       </nav>
 
@@ -168,7 +168,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={DHAK}
-            className="mx-4 max-h-[calc(100dvh-88px)] overflow-y-auto rounded-card border border-soft bg-surface p-8 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.5)] lg:hidden"
+            className="mx-4 max-h-[calc(100dvh-5.5rem)] overflow-y-auto rounded-card border border-soft bg-surface p-8 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.5)] lg:hidden"
           >
             <ul className="flex flex-col gap-6">
               {navLinks.map((link) => (
@@ -186,7 +186,7 @@ export function Navbar() {
             <Link
               href={navCta.href}
               onClick={() => setOpen(false)}
-              className="mt-8 flex h-control w-full items-center justify-center gap-2.5 rounded-full bg-accent font-jakarta text-[15px] font-semibold text-white"
+              className="mt-8 flex h-control w-full items-center justify-center gap-2.5 rounded-full bg-accent font-jakarta text-[0.9375rem] font-semibold text-white"
             >
               <PlayStoreIcon className="size-icon shrink-0" />
               {navCta.label}

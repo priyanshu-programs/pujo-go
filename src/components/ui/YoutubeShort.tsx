@@ -116,7 +116,7 @@ export function YoutubeShort({ id }: { id: string }) {
       <div
         className={`pointer-events-none absolute inset-0 z-[5] bg-black transition-opacity duration-300 ${playing ? "opacity-0" : "opacity-100"}`}
       >
-        <Image src={POSTER_SRC} alt="" fill sizes="320px" className="object-cover" />
+        <Image src={POSTER_SRC} alt="" fill sizes="(min-width: 1600px) 20vw, 320px" className="object-cover" />
       </div>
 
       {/* Whole screen is the play/pause target; the Shorts mark shows while paused. */}

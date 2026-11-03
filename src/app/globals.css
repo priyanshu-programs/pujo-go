@@ -25,18 +25,18 @@
   --breakpoint-xl: 1440px;
   --breakpoint-2xl: 1600px;
 
-  --radius-card: 32px;
-  --radius-section: 40px;
+  --radius-card: 2rem;
+  --radius-section: 2.5rem;
 
   /* Spacing aliases. Tailwind v4 already supplies the 4pt scale via
      `--spacing: 0.25rem` (p-4 = 16px, py-20 = 80px); these only name the
      values that carry meaning, so intent survives a refactor. */
-  --spacing-gutter: 20px; /* shell gutter, mobile */
-  --spacing-gutter-lg: 40px; /* shell gutter, >=md */
-  --spacing-navbar: 120px; /* fixed-navbar clearance */
-  --spacing-navbar-lg: 160px; /* page-header clearance above an h1 */
-  --spacing-icon: 18px; /* inline icon inside a control */
-  --spacing-hero-artwork-shift: 25px; /* hero cut-out artwork's leftward nudge off grid-center */
+  --spacing-gutter: 1.25rem; /* shell gutter, mobile */
+  --spacing-gutter-lg: 2.5rem; /* shell gutter, >=md */
+  --spacing-navbar: 7.5rem; /* fixed-navbar clearance */
+  --spacing-navbar-lg: 10rem; /* page-header clearance above an h1 */
+  --spacing-icon: 1.125rem; /* inline icon inside a control */
+  --spacing-hero-artwork-shift: 1.5625rem; /* hero cut-out artwork's leftward nudge off grid-center */
   /* How far the hero's centre artwork sits below its natural position. Scales
      with the viewport (9.44vw ≈ 136px at the 1440px xl breakpoint) and stops
      at 8.51rem (≈136px) once the shell is capped, so it tracks the layout
@@ -44,16 +44,16 @@
      the same amount rather than the image being clipped. */
   --spacing-hero-artwork-drop: min(9.44vw, 8.51rem);
 
-  --spacing-control: 52px; /* buttons, nav CTA, store badges */
+  --spacing-control: 3.25rem; /* buttons, nav CTA, store badges */
 
   /* Measure widths — feeds max-w-* / w-* */
-  --container-measure: 400px; /* short body copy beside artwork */
-  --container-blurb: 460px; /* centred section sub-copy */
-  --container-lede: 620px; /* page-header lede */
-  --container-form: 640px; /* contact form */
-  --container-prose: 720px; /* long-form paragraph measure */
-  --container-column: 800px; /* article / FAQ content column */
-  --container-shell: 1340px; /* the shell cap */
+  --container-measure: 25rem; /* short body copy beside artwork */
+  --container-blurb: 28.75rem; /* centred section sub-copy */
+  --container-lede: 38.75rem; /* page-header lede */
+  --container-form: 40rem; /* contact form */
+  --container-prose: 45rem; /* long-form paragraph measure */
+  --container-column: 50rem; /* article / FAQ content column */
+  --container-shell: 83.75rem; /* the shell cap: 1340px at the 16px root, grows with it past 1600px */
 
   /* Hero's 3-col frame: symmetric fr outer rails, wider asymmetric center
      for the cut-out artwork. See Hero.tsx for why it departs from a shared
@@ -62,7 +62,7 @@
 
   /* The shared 3-up card grid. auto-fit rather than explicit md/lg steps so
      every card grid resolves its own column count from one rule. */
-  --grid-template-columns-cards: repeat(auto-fit, minmax(300px, 1fr));
+  --grid-template-columns-cards: repeat(auto-fit, minmax(18.75rem, 1fr));
 
   /* HowItWorks' two-track body: step list / phone stack. The source builds this
      row with `flex: 1 0 0` beside `flex: 2 0 0`, so the stack gets exactly twice
@@ -71,7 +71,13 @@
 }
 
 @layer base {
+  /* Large-screen scaling. Every layout size is in rem, so the root size is the
+     one knob: 16px (or the user's own default) up to a 1600px viewport, then
+     1vw — 19.2px at 1920, 25.6px at 2560 — so wide screens get the 1600px
+     composition scaled up instead of a 1340px column in a sea of margin.
+     Breakpoints stay in px; media queries never read this value. */
   html {
+    font-size: max(100%, 1vw);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -96,46 +102,53 @@
     letter-spacing: 0;
   }
 
+  /* Visible keyboard focus everywhere (WCAG 2.4.7). Components with their own
+     focus-visible ring override this; mouse clicks never show it. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
   /* Anchor targets sit under the fixed navbar */
   section[id] {
-    scroll-margin-top: 120px;
+    scroll-margin-top: 7.5rem;
   }
 }
 
 @layer utilities {
   /* Display scale — h1 80/51/41, h2 52/48/38, h3 24 (source values) */
   .text-display-1 {
-    font-size: 41px;
+    font-size: 2.5625rem;
   }
   .text-display-2 {
-    font-size: 38px;
+    font-size: 2.375rem;
     line-height: 1.15;
   }
   .text-display-3 {
-    font-size: 24px;
+    font-size: 1.5rem;
     line-height: 1.4;
   }
 
   @media (min-width: 810px) {
     .text-display-1 {
-      font-size: 51px;
+      font-size: 3.1875rem;
     }
     .text-display-2 {
-      font-size: 48px;
+      font-size: 3rem;
     }
   }
 
   @media (min-width: 1200px) {
     .text-display-1 {
-      font-size: 80px;
+      font-size: 5rem;
     }
     .text-display-2 {
-      font-size: 52px;
+      font-size: 3.25rem;
     }
   }
 
   .text-eyebrow {
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 700;
     line-height: 1.4;
     letter-spacing: 0.04em;
@@ -143,7 +156,7 @@
   }
 
   .text-body-lg {
-    font-size: 18px;
+    font-size: 1.125rem;
     line-height: 1.3;
   }
 
@@ -167,7 +180,7 @@
    */
   .text-hero-display {
     font-family: var(--font-jakarta);
-    font-size: clamp(38px, 9.4vw, 140px);
+    font-size: clamp(2.375rem, 9.4vw, 8.75rem);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.02em;
@@ -181,7 +194,7 @@
    */
   .text-hero-lede {
     font-family: var(--font-jakarta);
-    font-size: clamp(14.25px, 1.25vw, 18px);
+    font-size: clamp(0.890625rem, 1.25vw, 1.125rem);
     font-weight: 400;
     line-height: 1.45;
   }
@@ -251,61 +264,103 @@
 .hero-section {
   position: relative;
   overflow: clip;
-  padding-top: 116px;
+  padding-top: 7.25rem;
   background: linear-gradient(to bottom, #000 75%, var(--color-paper) 100%);
 }
 .hero-heading {
   margin: 0 auto;
   text-align: center;
-  font-size: clamp(32px, 9.3vw, 80px);
+  font-size: clamp(2rem, 9.3vw, 5rem);
   font-weight: 800;
   line-height: 1.06;
   letter-spacing: -0.045em;
 }
-.hero-heading-bottom { margin-top: 8px; }
+.hero-heading-bottom { margin-top: 0.5rem; }
 .hero-grid {
   display: grid;
   grid-template-areas: "intro" "aside" "art";
   grid-template-columns: minmax(0, 1fr);
-  gap: 28px;
-  margin-top: 28px;
+  gap: 1.75rem;
+  margin-top: 1.75rem;
   justify-items: center;
   text-align: center;
 }
-.hero-intro { grid-area: intro; min-width: 0; max-width: 560px; }
-.hero-aside { grid-area: aside; min-width: 0; width: 100%; max-width: 560px; }
-.hero-copy { font-size: clamp(16px, 2vw, 18px); line-height: 1.55; color: white; }
-.hero-avatars { display: flex; justify-content: center; margin-top: 28px; }
-.hero-actions { display: flex; justify-content: center; gap: 12px; margin-top: 24px; }
+.hero-intro { grid-area: intro; min-width: 0; max-width: 35rem; }
+.hero-aside { grid-area: aside; min-width: 0; width: 100%; max-width: 35rem; }
+.hero-copy { font-size: clamp(1rem, 2vw, 1.125rem); line-height: 1.55; color: white; }
+.hero-avatars { display: flex; justify-content: center; margin-top: 1.75rem; }
+.hero-actions { display: flex; justify-content: center; gap: 0.75rem; margin-top: 1.5rem; }
 .hero-artwork {
   grid-area: art;
   width: 100%;
-  max-width: 560px;
+  max-width: 35rem;
   min-width: 0;
   mask-image: linear-gradient(to bottom, #000 68%, rgba(0,0,0,.85) 78%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, #000 68%, rgba(0,0,0,.85) 78%, transparent 100%);
 }
 @media (min-width: 1200px) {
   /* Keep the complete composition compact even on wide, short browser windows. */
-  .hero-section { padding-top: 112px; }
-  .hero-section > .shell { max-width: 1240px; }
-  .hero-heading { font-size: clamp(80px, 6.7vw, 96px); text-align: left; }
-  .hero-heading-bottom { text-align: right; margin-top: -12px; }
+  .hero-section { padding-top: 7rem; }
+  .hero-section > .shell { max-width: 77.5rem; }
+  .hero-heading { font-size: clamp(5rem, 6.7vw, 6rem); text-align: left; }
+  .hero-heading-bottom { text-align: right; margin-top: -0.75rem; }
   .hero-grid {
     grid-template-areas: "intro art aside";
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr);
-    gap: 24px;
-    margin-top: 12px;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
     align-items: start;
     text-align: left;
   }
   .hero-artwork {
     width: 100%;
-    max-width: clamp(280px, calc((100svh - 332px) * 0.758), 420px);
+    max-width: clamp(17.5rem, calc((100svh - 20.75rem) * 0.758), 26.25rem);
   }
-  .hero-intro { padding-top: 12px; }
-  .hero-aside { padding-top: 72px; }
-  .hero-avatars { justify-content: flex-start; margin-top: 24px; }
-  .hero-actions { justify-content: flex-start; gap: 10px; margin-top: 20px; }
-  .hero-actions > a { flex: 1 1 0; font-size: 14px; gap: 8px; }
+  .hero-intro { padding-top: 0.75rem; }
+  .hero-aside { padding-top: 4.5rem; }
+  .hero-avatars { justify-content: flex-start; margin-top: 1.5rem; }
+  .hero-actions { justify-content: flex-start; gap: 0.625rem; margin-top: 1.25rem; }
+  .hero-actions > a { flex: 1 1 0; font-size: 0.875rem; gap: 0.5rem; }
+}
+
+/* "Skip to main content": first tab stop on every page, hidden until focused. */
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  z-index: 10000;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid #fff;
+}
+
+
+/* Page scrollbar in the site palette: red accent thumb on the near-black page.
+   `scrollbar-color` covers Chrome/Edge/Firefox (Chrome ignores the ::-webkit
+   rules once it is set); the ::-webkit rules are for Safari. */
+html {
+  scrollbar-color: var(--color-accent) var(--color-paper);
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border: 2px solid var(--color-paper);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff3b3b;
 }

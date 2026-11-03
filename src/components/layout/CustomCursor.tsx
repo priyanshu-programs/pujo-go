@@ -29,6 +29,13 @@ import { useEffect, useRef, useState } from "react";
 const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], input, select, textarea, label, summary, [onclick], [tabindex]:not([tabindex="-1"])';
 
+/**
+ * Any element with `data-cursor-label="..."` swaps the hand for a red tooltip
+ * pill carrying that text (e.g. team cards show the member's handle). Labels
+ * win over the interactive hover hand.
+ */
+const LABEL_ATTR = "data-cursor-label";
+
 const FINE_POINTER = "(hover: hover) and (pointer: fine) and (min-width: 1024px)";
 
 // Each state's hotspot is its extended fingertip, in px at the drawn size. The
@@ -46,6 +53,9 @@ export function CustomCursor() {
   // the pointer has ever reported a position.
   const [visible, setVisible] = useState(false);
   const [hovering, setHovering] = useState(false);
+  const [label, setLabel] = useState<string | null>(null);
+  // Last non-empty label, kept so the pill can fade out with its text intact.
+  const [shownLabel, setShownLabel] = useState("");
 
   const cursorRef = useRef<HTMLDivElement>(null);
 
@@ -81,11 +91,11 @@ export function CustomCursor() {
       setVisible(true);
 
       const target = event.target;
-      setHovering(
-        target instanceof Element
-          ? target.closest(INTERACTIVE_SELECTOR) !== null
-          : false,
-      );
+      const el = target instanceof Element ? target : null;
+      setHovering(el ? el.closest(INTERACTIVE_SELECTOR) !== null : false);
+      const next = el?.closest(`[${LABEL_ATTR}]`)?.getAttribute(LABEL_ATTR) || null;
+      setLabel(next);
+      if (next) setShownLabel(next);
 
       if (!frame) frame = requestAnimationFrame(render);
     };
@@ -127,7 +137,7 @@ export function CustomCursor() {
         width={68}
         height={92}
         style={{
-          display: hovering ? "none" : "block",
+          display: hovering || label ? "none" : "block",
           maxWidth: "none",
           transform: `translate(${-DEFAULT_HOTSPOT.x}px, ${-DEFAULT_HOTSPOT.y}px)`,
         }}
@@ -139,11 +149,28 @@ export function CustomCursor() {
         width={67}
         height={92}
         style={{
-          display: hovering ? "block" : "none",
+          display: hovering && !label ? "block" : "none",
           maxWidth: "none",
           transform: `translate(${-HOVER_HOTSPOT.x}px, ${-HOVER_HOTSPOT.y}px)`,
         }}
       />
+      {/* Tooltip pill: its top-left tail sits on the pointer, and it grows
+          out of that corner with the same soft expo-out ease as the photos. */}
+      <div
+        className="absolute left-0 top-0 origin-top-left transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{
+          opacity: label ? 1 : 0,
+          transform: label ? "translate(6px, 8px) scale(1)" : "translate(6px, 8px) scale(0.6)",
+        }}
+      >
+        <span
+          className="absolute -top-1 left-0 size-0 border-x-[6px] border-b-[6px] border-x-transparent border-b-accent"
+          style={{ left: 6 }}
+        />
+        <span className="block whitespace-nowrap rounded-md bg-accent px-3 py-1.5 text-sm font-semibold text-white shadow-[0_8px_24px_-6px_rgba(254,0,0,0.55)]">
+          {shownLabel}
+        </span>
+      </div>
     </div>
   );
 }

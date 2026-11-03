@@ -14,7 +14,7 @@ export function MoodScreen() {
   return (
     <div className="flex h-full flex-col">
       <PhoneStatusBar />
-      <p className="px-[8%] pt-[6%] font-display text-[13px] leading-tight text-ink">
+      <p className="px-[8%] pt-[6%] font-display text-[0.8125rem] leading-tight text-ink">
         How are you
         <br />
         feeling today?
@@ -25,18 +25,18 @@ export function MoodScreen() {
             key={mood.label}
             className="flex items-center gap-[4%] rounded-full bg-surface/80 px-[4%] py-[3%] shadow-[0_2px_6px_rgba(0,0,0,0.3)]"
           >
-            <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-blush text-[11px]">
+            <span className="flex h-[1.375rem] w-[1.375rem] shrink-0 items-center justify-center rounded-full bg-blush text-[0.6875rem]">
               {mood.emoji}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[8px] font-bold text-ink">
+              <span className="block truncate text-[0.5rem] font-bold text-ink">
                 {mood.label}
               </span>
-              <span className="block truncate text-[6px] text-muted">
+              <span className="block truncate text-[0.375rem] text-muted">
                 {mood.hint}
               </span>
             </span>
-            <span className="text-[8px] text-muted">›</span>
+            <span className="text-[0.5rem] text-muted">›</span>
           </div>
         ))}
       </div>
@@ -109,7 +109,7 @@ function StaticScreen({ src }: { src: string }) {
         alt=""
         aria-hidden="true"
         fill
-        sizes="320px"
+        sizes="(min-width: 1600px) 20vw, 320px"
         className="object-cover"
       />
     </div>
@@ -133,20 +133,20 @@ export function ProgressScreen() {
     <div className="flex h-full flex-col bg-gradient-to-b from-surface to-paper text-white">
       <PhoneStatusBar />
       <div className="px-[8%] pt-[6%]">
-        <p className="text-[6px] font-bold uppercase tracking-[0.08em] text-white/50">
+        <p className="text-[0.375rem] font-bold uppercase tracking-[0.08em] text-white/50">
           June 2025
         </p>
-        <p className="mt-[2%] font-display text-[14px] leading-tight">
+        <p className="mt-[2%] font-display text-[0.875rem] leading-tight">
           18 meditations
           <br />
           completed
         </p>
       </div>
-      <div className="mt-[6%] grid grid-cols-7 gap-y-[6px] px-[7%]">
+      <div className="mt-[6%] grid grid-cols-7 gap-y-[0.375rem] px-[7%]">
         {days.map((d) => (
           <span
             key={d}
-            className="text-center text-[6px] font-bold text-white/40"
+            className="text-center text-[0.375rem] font-bold text-white/40"
           >
             {d}
           </span>
@@ -154,7 +154,7 @@ export function ProgressScreen() {
         {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
           <span
             key={day}
-            className={`mx-auto flex h-[13px] w-[13px] items-center justify-center rounded-full text-[6px] ${
+            className={`mx-auto flex h-[0.8125rem] w-[0.8125rem] items-center justify-center rounded-full text-[0.375rem] ${
               highlighted.has(day)
                 ? "bg-blush font-bold text-ink"
                 : "text-white/55"
@@ -180,7 +180,7 @@ export function SessionsScreen() {
   return (
     <div className="flex h-full flex-col">
       <PhoneStatusBar />
-      <p className="px-[8%] pt-[6%] font-display text-[13px] text-ink">
+      <p className="px-[8%] pt-[6%] font-display text-[0.8125rem] text-ink">
         Today for you
       </p>
       <div className="mt-[5%] flex flex-col gap-[3%] px-[6%]">
@@ -189,8 +189,8 @@ export function SessionsScreen() {
             key={s.title}
             className="flex items-center justify-between rounded-[10px] bg-surface/80 px-[5%] py-[4%]"
           >
-            <span className="text-[8px] font-bold text-ink">{s.title}</span>
-            <span className="text-[6px] text-muted">{s.length}</span>
+            <span className="text-[0.5rem] font-bold text-ink">{s.title}</span>
+            <span className="text-[0.375rem] text-muted">{s.length}</span>
           </div>
         ))}
       </div>

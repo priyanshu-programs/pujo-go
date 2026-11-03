@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
+import { useRootScale } from "@/lib/useRootScale";
 import { DiscoverDemoScreen, MoodDemoScreen, ToiletDemoScreen } from "./Screens";
 import { leaderboard, notifications } from "@/content/features";
 import type { FeatureVisual } from "@/content/features";
@@ -89,7 +90,7 @@ function PhotoStack({ isHovered }: { isHovered: boolean }) {
           transition={FAN_SHIFT}
         >
           <span className="relative block h-full w-full">
-            <Image src={card.src} alt="" fill sizes="180px" className="object-cover" />
+            <Image src={card.src} alt="" fill sizes="(min-width: 1600px) 11.25vw, 180px" className="object-cover" />
           </span>
         </motion.span>
       ))}
@@ -155,6 +156,8 @@ function Community({ isHovered }: { isHovered: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const transition = reduced ? { duration: 0 } : COMMUNITY_SPRING;
+  /** Every px size below is a 16px-root design value; `k` grows them with the root on large screens. */
+  const k = useRootScale();
 
   useEffect(() => {
     const el = containerRef.current;
@@ -176,23 +179,20 @@ function Community({ isHovered }: { isHovered: boolean }) {
    * `overflow-hidden` with no fade mask (unlike the bottom, which fades),
    * so an unclamped burst can get sliced off on shorter or narrower tiles.
    */
-  const RING_EDGE_PADDING = 12;
+  const RING_EDGE_PADDING = 12 * k;
   /** The band's `pt-8` sits above this container, so that much extra room exists before the clip edge. */
-  const TOP_PAD = 32;
+  const TOP_PAD = 32 * k;
+  const restRadius = OUTER_RING_REST_RADIUS * k;
+  const hoverRadius = OUTER_RING_HOVER_RADIUS * k;
   /** Avatars are centred on the orbit, so their own half-size sticks out past it. */
-  const avatarHalf = Math.max(...COMMUNITY_AVATARS.map((a) => a.hoverSize)) / 2;
+  const avatarHalf = (Math.max(...COMMUNITY_AVATARS.map((a) => a.hoverSize)) / 2) * k;
   const maxBurstRadius =
     box.width > 0 && box.height > 0
       ? Math.min(cx - avatarHalf, box.width - cx - avatarHalf, cy + TOP_PAD - avatarHalf) -
         RING_EDGE_PADDING
-      : OUTER_RING_HOVER_RADIUS;
-  const outerHoverRadius = Math.max(
-    OUTER_RING_REST_RADIUS,
-    Math.min(OUTER_RING_HOVER_RADIUS, maxBurstRadius)
-  );
-  const burstScale =
-    (outerHoverRadius - OUTER_RING_REST_RADIUS) /
-    (OUTER_RING_HOVER_RADIUS - OUTER_RING_REST_RADIUS);
+      : hoverRadius;
+  const outerHoverRadius = Math.max(restRadius, Math.min(hoverRadius, maxBurstRadius));
+  const burstScale = (outerHoverRadius - restRadius) / (hoverRadius - restRadius);
 
   /** Places a circle's centre at `radius` px from the ring centre along `angleDeg`. */
   function orbitPosition(angleDeg: number, radius: number) {
@@ -213,8 +213,8 @@ function Community({ isHovered }: { isHovered: boolean }) {
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[6px] border-blush"
             style={{ opacity: ring.opacity }}
             animate={{
-              width: isHovered ? ring.restSize + (ring.hoverSize - ring.restSize) * burstScale : ring.restSize,
-              height: isHovered ? ring.restSize + (ring.hoverSize - ring.restSize) * burstScale : ring.restSize,
+              width: (isHovered ? ring.restSize + (ring.hoverSize - ring.restSize) * burstScale : ring.restSize) * k,
+              height: (isHovered ? ring.restSize + (ring.hoverSize - ring.restSize) * burstScale : ring.restSize) * k,
             }}
             transition={transition}
           />
@@ -226,8 +226,8 @@ function Community({ isHovered }: { isHovered: boolean }) {
         className="absolute -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-4 border-blush"
         style={{ left: cx, top: cy }}
         animate={{
-          width: isHovered ? 204 : 192,
-          height: isHovered ? 204 : 192,
+          width: (isHovered ? 204 : 192) * k,
+          height: (isHovered ? 204 : 192) * k,
         }}
         transition={transition}
       >
@@ -236,7 +236,7 @@ function Community({ isHovered }: { isHovered: boolean }) {
             src={CENTER_AVATAR_SRC}
             alt=""
             fill
-            sizes="204px"
+            sizes="(min-width: 1600px) 12.75vw, 204px"
             className="object-cover"
           />
         </span>
@@ -244,11 +244,8 @@ function Community({ isHovered }: { isHovered: boolean }) {
 
       {box.width > 0 &&
         COMMUNITY_AVATARS.map((a, i) => {
-          const rest = orbitPosition(a.angleDeg, OUTER_RING_REST_RADIUS);
-          const hover = orbitPosition(
-            a.angleDeg,
-            OUTER_RING_REST_RADIUS + (OUTER_RING_HOVER_RADIUS - OUTER_RING_REST_RADIUS) * burstScale
-          );
+          const rest = orbitPosition(a.angleDeg, restRadius);
+          const hover = orbitPosition(a.angleDeg, outerHoverRadius);
           const pos = isHovered ? hover : rest;
           return (
             <motion.span
@@ -257,8 +254,8 @@ function Community({ isHovered }: { isHovered: boolean }) {
               animate={{
                 left: pos.left,
                 top: pos.top,
-                width: isHovered ? a.restSize + (a.hoverSize - a.restSize) * burstScale : a.restSize,
-                height: isHovered ? a.restSize + (a.hoverSize - a.restSize) * burstScale : a.restSize,
+                width: (isHovered ? a.restSize + (a.hoverSize - a.restSize) * burstScale : a.restSize) * k,
+                height: (isHovered ? a.restSize + (a.hoverSize - a.restSize) * burstScale : a.restSize) * k,
               }}
               transition={transition}
             >
@@ -267,7 +264,7 @@ function Community({ isHovered }: { isHovered: boolean }) {
                   src={a.src}
                   alt=""
                   fill
-                  sizes="72px"
+                  sizes="(min-width: 1600px) 4.5vw, 72px"
                   className="object-cover"
                 />
               </span>
@@ -408,8 +405,11 @@ function PhoneTrio({ isHovered }: { isHovered: boolean }) {
     return () => observer.disconnect();
   }, []);
 
+  /** Canvas px are 16px-root design values; `k` grows them (and the rem-sized phones) together on large screens. */
+  const k = useRootScale();
+
   /** Fits the fan to narrower tiles (boosted on small ones, see `SMALL_TILE`); never enlarges past its natural size. */
-  const fit = containerWidth / TRIO_CANVAS.width;
+  const fit = containerWidth / (TRIO_CANVAS.width * k);
   const scale =
     containerWidth > 0
       ? Math.min(1, containerWidth < SMALL_TILE.below ? fit * SMALL_TILE.boost : fit)
@@ -419,13 +419,17 @@ function PhoneTrio({ isHovered }: { isHovered: boolean }) {
     <div ref={containerRef} className="relative h-full w-full">
       <div
         className="absolute left-1/2 top-1/2"
-        style={{ ...TRIO_CANVAS, transform: `translate(-50%, -30%) scale(${scale})` }}
+        style={{
+          width: TRIO_CANVAS.width * k,
+          height: TRIO_CANVAS.height * k,
+          transform: `translate(-50%, -30%) scale(${scale})`,
+        }}
       >
         {PHONES.map(({ rotate, Screen, top, left, dx }, i) => (
           <motion.div
             key={i}
             className={`absolute ${i === 2 ? "z-10" : ""}`}
-            style={{ top, left, rotate: `${rotate}deg` }}
+            style={{ top: top * k, left: left * k, rotate: `${rotate}deg` }}
             animate={
               reduced ? undefined : { x: isHovered ? dx : 0, y: isHovered ? -10 : 0 }
             }
@@ -472,7 +476,7 @@ function Notifications() {
           className="flex items-center gap-3 rounded-3xl border border-soft bg-surface/55 p-3.5 backdrop-blur-[4px]"
           style={{ opacity: n.opacity }}
         >
-          <span className="h-[53px] w-[53px] shrink-0 overflow-hidden rounded-[8.5px]">
+          <span className="h-[3.3125rem] w-[3.3125rem] shrink-0 overflow-hidden rounded-[8.5px]">
             <Gradient angle={150} />
           </span>
           <span className="min-w-0 flex-1">

@@ -27,12 +27,13 @@ export function PhoneFrame({
   underlay?: ReactNode;
   className?: string;
   style?: CSSProperties;
+  /** Design width in px at the 16px root; rendered in rem so it grows with the root on large screens. */
   width?: number;
 }) {
   return (
     <div
       className={`relative shrink-0 drop-shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] ${className}`}
-      style={{ width, aspectRatio: 933 / 1685, ...style }}
+      style={{ width: `${width / 16}rem`, aspectRatio: 933 / 1685, ...style }}
     >
       {underlay && (
         <div
@@ -42,7 +43,7 @@ export function PhoneFrame({
             right: "13.08%",
             top: "3.19%",
             bottom: "3.54%",
-            borderRadius: width * 0.08,
+            borderRadius: `${(width * 0.08) / 16}rem`,
           }}
         >
           {underlay}
@@ -54,7 +55,7 @@ export function PhoneFrame({
         alt=""
         aria-hidden="true"
         fill
-        sizes={`${width}px`}
+        sizes={`(min-width: 1600px) ${width / 16}vw, ${width}px`}
         className="pointer-events-none select-none object-contain"
         priority={false}
       />
@@ -68,7 +69,7 @@ export function PhoneFrame({
             right: "14.2%",
             top: "9.3%",
             bottom: "9.6%",
-            borderRadius: width * 0.1,
+            borderRadius: `${(width * 0.1) / 16}rem`,
           }}
         >
           {children}
@@ -81,12 +82,12 @@ export function PhoneFrame({
 /** Status bar row — time left, signal cluster right. */
 export function PhoneStatusBar({ time = "21:41" }: { time?: string }) {
   return (
-    <div className="flex items-center justify-between px-[8%] pt-[4.5%] text-[8px] font-bold text-ink/80">
+    <div className="flex items-center justify-between px-[8%] pt-[4.5%] text-[0.5rem] font-bold text-ink/80">
       <span>{time}</span>
-      <span className="flex items-center gap-[3px]">
-        <span className="inline-block h-[6px] w-[10px] rounded-[1px] bg-ink/60" />
-        <span className="inline-block h-[6px] w-[6px] rounded-full bg-ink/60" />
-        <span className="inline-block h-[6px] w-[12px] rounded-[2px] border border-ink/60" />
+      <span className="flex items-center gap-[0.1875rem]">
+        <span className="inline-block h-[0.375rem] w-[0.625rem] rounded-[1px] bg-ink/60" />
+        <span className="inline-block h-[0.375rem] w-[0.375rem] rounded-full bg-ink/60" />
+        <span className="inline-block h-[0.375rem] w-[0.75rem] rounded-[2px] border border-ink/60" />
       </span>
     </div>
   );

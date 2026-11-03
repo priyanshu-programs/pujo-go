@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 type Status = "idle" | "error" | "sent";
 
 const fieldClass =
-  "w-full rounded-2xl border border-soft bg-surface px-5 py-4 text-base text-ink outline-none transition-colors placeholder:text-muted/60 focus:border-accent/60";
+  "w-full rounded-2xl border border-soft bg-surface px-5 py-4 text-base text-ink transition-colors placeholder:text-muted focus:border-accent/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 /**
  * Controlled contact form. There is no backend in this rebuild, so submit
