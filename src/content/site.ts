@@ -78,7 +78,7 @@ export const socialLinks = [
 ] as const;
 
 export const legalLinks: NavLink[] = [
-  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms & Conditions", href: "/terms" },
   { label: "Delete Account", href: "/delete-account" },
 ];
