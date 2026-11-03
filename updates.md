@@ -256,3 +256,10 @@ Replaces the CSS slide from the entry below. A CSS keyframe can animate in but c
 - `next/image` `sizes` hints that were fixed px now add a `(min-width: 1600px) N/16 vw` entry so the larger render picks a sharp source (Navbar, Footer, Preloader, Hero, FeatureVisuals, Screens, YoutubeShort, PhoneFrame, `/team`).
 - Rule from here on: layout sizes go in rem, not px, or they won't scale on large screens. Px numbers fed through JS should be multiplied by `useRootScale()`.
 - `tsc --noEmit` and eslint clean. Browser sweep (Browser MCP iframe emulation, 320–2560) pending: Browser MCP was paused.
+
+## 2026-11-03 (sync with main repo)
+
+- Merged `asurslayers/pujogo-landing-page` master (the main repo) into this fork's master (`e4e9a16`, no conflicts). Brought in the teammates' changes: `/privacy` renamed to `/privacy-policy`, `.html` redirects in `next.config.ts`, a `site.ts` link update, and the `/route/share` + `/routes/share` share-link pages.
+- `src/components/layout/CookieBanner.tsx`: the banner's "Privacy Policy" link pointed at `/privacy`, which 404s after the rename; now `/privacy-policy`.
+- `src/app/privacy-policy/page.tsx`: `LegalPage` `path` was still `/privacy`, so the legal nav never marked Privacy Policy as the current page; now `/privacy-policy`.
+- Checked: `tsc` clean; every route returns 200 (`/`, `/team`, `/contact`, `/privacy-policy`, `/terms`, `/delete-account`, `/route/share`, `/routes/share`), `/privacy-policy.html` 308s to `/privacy-policy`, `/privacy` is 404. Remaining lint errors are not from these changes (main's share page, `team/join`, `CustomCursor`, `HowItWorks`).

@@ -5,5 +5,5 @@ import documents from "@/content/legal/documents.json";
 export const metadata: Metadata = { title: "Privacy Policy" };
 
 export default function Page() {
-  return <LegalPage content={documents["privacy"]} path="/privacy" />;
+  return <LegalPage content={documents["privacy"]} path="/privacy-policy" />;
 }

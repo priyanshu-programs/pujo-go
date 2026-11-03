@@ -137,7 +137,7 @@ export function CookieBanner() {
                 ) : (
                   <p className="text-xs leading-snug text-muted">
                     We use cookies to run the site and play videos.{" "}
-                    <Link href="/privacy" className="text-ink underline underline-offset-2 hover:text-accent">
+                    <Link href="/privacy-policy" className="text-ink underline underline-offset-2 hover:text-accent">
                       Privacy Policy
                     </Link>
                     .
